@@ -23,7 +23,8 @@
             <a href="#" class="active"><i class="fa-solid fa-chart-line"></i> OVERVIEW</a>
             <a href="learning.html"><i class="fa-solid fa-graduation-cap"></i> LEARNING HUB</a>
             <a href="#"><i class="fa-solid fa-microchip"></i> PROJECT LAB</a>
-            <a href="leaderboard.html"><i class="fa-solid fa-trophy"></i> LEADERBOARD</a>        </aside>
+            <a href="leaderboard.html"><i class="fa-solid fa-trophy"></i> LEADERBOARD</a>
+        </aside>
 
         <main class="main-content">
             <div class="welcome-banner">
@@ -71,11 +72,7 @@
     <script src="firebase-config.js"></script>
 
     <script>
-        // Start Services
-        const auth = firebase.auth();
-        const db = firebase.firestore();
-
-        // Check Login Status
+                // Check Login Status
         auth.onAuthStateChanged(user => {
             if (user) {
                 console.log("AUTHORIZED: " + user.email);

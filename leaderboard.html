@@ -59,8 +59,7 @@
     <script src="firebase-config.js"></script>
 
     <script>
-        const db = firebase.firestore();
-        const tableBody = document.getElementById('leaderboard-body');
+               const tableBody = document.getElementById('leaderboard-body');
 
         // QUERY: Get Top 10 Users sorted by Points
         db.collection('users')

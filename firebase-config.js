@@ -1,7 +1,6 @@
-// 1. YOUR API KEYS
-// (Make sure to put your real keys back in here!)
+// 1. YOUR KEYS
 const firebaseConfig = {
-  apiKey: "AIzaSyCIKoqUtc7IkUCEzDJVBDQ__tZWoAlzUa0",
+ apiKey: "AIzaSyCIKoqUtc7IkUCEzDJVBDQ__tZWoAlzUa0",
   authDomain: "core-os-db.firebaseapp.com",
   projectId: "core-os-db",
   storageBucket: "core-os-db.firebasestorage.app",
@@ -9,11 +8,16 @@ const firebaseConfig = {
   appId: "1:291952417111:web:eb4d651d53563091208612"
 };
 
-// 2. INITIALIZE FIREBASE APP ONLY
-// We will start Auth and Database in the HTML files to prevent errors.
-if (typeof firebase !== 'undefined') {
-  firebase.initializeApp(firebaseConfig);
-  console.log("FIREBASE CONFIG LOADED");
-} else {
-  console.error("Error: Firebase libraries not loaded yet.");
-}
+// 2. INITIALIZE SERVICES GLOBALLY
+// This makes "auth" and "db" available to ALL your HTML pages.
+firebase.initializeApp(firebaseConfig);
+
+// Define them on "window" to prevent "not defined" errors
+window.auth = firebase.auth();
+window.db = firebase.firestore();
+
+// Also define them as standard variables for older scripts
+var auth = firebase.auth();
+var db = firebase.firestore();
+
+console.log("SYSTEM ONLINE: Auth & Database Connected");
