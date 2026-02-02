@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CORE | COMMUNITY UPLINK</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <nav class="glass-panel" style="position: fixed; top: 0; width: 100%; z-index: 100;">
+        <div class="logo">C.O.R.E <span class="blink">_</span></div>
+        <div class="user-menu"><a href="dashboard.html" class="btn-secondary">RETURN TO BASE</a></div>
+    </nav>
+
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <a href="dashboard.html"><i class="fa-solid fa-chart-line"></i> OVERVIEW</a>
+            <a href="learning.html"><i class="fa-solid fa-graduation-cap"></i> LEARNING HUB</a>
+            <a href="project.html"><i class="fa-solid fa-microchip"></i> PROJECT LAB</a>
+            <a href="#" class="active"><i class="fa-solid fa-users"></i> COMMUNITY</a>
+            <a href="leaderboard.html"><i class="fa-solid fa-trophy"></i> LEADERBOARD</a>
+        </aside>
+
+        <main class="main-content">
+            
+            <div style="border-bottom: 1px solid var(--glass-border); margin-bottom: 2rem;">
+                <button class="tab-btn active" onclick="switchTab('global')">GLOBAL COMMS</button>
+                <button class="tab-btn" onclick="switchTab('guild')">GUILD OPS</button>
+            </div>
+
+            <div id="tab-global">
+                <div class="section-header"><h2>GLOBAL FREQUENCY</h2><div class="line"></div></div>
+                
+                <div class="chat-container glass-panel">
+                    <div id="global-chat-window" class="chat-window">
+                        <div class="msg-system">CONNECTING TO SECURE SERVER...</div>
+                    </div>
+                    <form id="global-chat-form" class="chat-input-area">
+                        <input type="text" id="global-msg-input" placeholder="Broadcast message..." style="flex:1; padding: 1rem; background: transparent; border: none; color: white; outline: none;">
+                        <button type="submit" class="btn-primary">SEND</button>
+                    </form>
+                </div>
+            </div>
+
+            <div id="tab-guild" style="display: none;">
+                
+                <div id="guild-browser">
+                    <div class="section-header"><h2>GUILD RECRUITMENT</h2><div class="line"></div></div>
+                    
+                    <div class="glass-panel" style="padding: 2rem; margin-bottom: 2rem; text-align: center;">
+                        <h3 style="color: var(--neon-cyan);">INITIALIZE NEW GUILD</h3>
+                        <p style="margin-bottom: 1rem; color: gray;">Create a faction. Invite engineers. Dominate the leaderboard.</p>
+                        <input type="text" id="new-guild-name" placeholder="Guild Name" style="padding: 0.5rem; background: #000; border: 1px solid var(--neon-cyan); color: white;">
+                        <button onclick="createGuild()" class="btn-primary">CREATE (+100 PTS)</button>
+                    </div>
+
+                    <h3 style="margin-bottom: 1rem;">ACTIVE FACTIONS</h3>
+                    <div id="guild-list" style="display: flex; flex-direction: column; gap: 1rem;">
+                        </div>
+                </div>
+
+                <div id="my-guild-view" style="display: none;">
+                    <div class="section-header">
+                        <h2 id="guild-title-display">MY GUILD</h2>
+                        <button onclick="leaveGuild()" class="btn-secondary" style="font-size: 0.7rem;">LEAVE GUILD</button>
+                    </div>
+                    
+                    <div class="chat-container glass-panel">
+                        <div id="guild-chat-window" class="chat-window">
+                            <div class="msg-system">ENCRYPTED GUILD CHANNEL OPEN</div>
+                        </div>
+                        <form id="guild-chat-form" class="chat-input-area">
+                            <input type="text" id="guild-msg-input" placeholder="Message team..." style="flex:1; padding: 1rem; background: transparent; border: none; color: white; outline: none;">
+                            <button type="submit" class="btn-primary" style="border-color: gold; color: gold;">CMD</button>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+
+        </main>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+
+    <script>
+        // --- 1. SETUP ---
+        let currentUser = null;
+        let myGuildId = null;
+
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                currentUser = user;
+                loadGlobalChat();
+                checkGuildStatus();
+            } else {
+                window.location.href = "index.html";
+            }
+        });
+
+        // --- 2. TAB SWITCHING ---
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('tab-global').style.display = 'none';
+            document.getElementById('tab-guild').style.display = 'none';
+            
+            if(tab === 'global') {
+                document.getElementById('tab-global').style.display = 'block';
+                event.target.classList.add('active');
+            } else {
+                document.getElementById('tab-guild').style.display = 'block';
+                event.target.classList.add('active');
+            }
+        }
+
+        // --- 3. GLOBAL CHAT LOGIC ---
+        function loadGlobalChat() {
+            const chatWindow = document.getElementById('global-chat-window');
+            // Listen for messages in real-time
+            db.collection('global_chat').orderBy('timestamp', 'asc').limitToLast(50)
+              .onSnapshot(snapshot => {
+                  chatWindow.innerHTML = ''; // Clear
+                  snapshot.forEach(doc => {
+                      const msg = doc.data();
+                      const isMine = msg.uid === currentUser.uid;
+                      chatWindow.innerHTML += `
+                        <div class="message ${isMine ? 'msg-mine' : 'msg-other'}">
+                            <small style="color: gray; font-size: 0.7rem;">${msg.name}</small><br>
+                            ${msg.text}
+                        </div>`;
+                  });
+                  chatWindow.scrollTop = chatWindow.scrollHeight; // Auto scroll down
+              });
+        }
+
+        document.getElementById('global-chat-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const input = document.getElementById('global-msg-input');
+            if(input.value.trim() === '') return;
+
+            db.collection('global_chat').add({
+                text: input.value,
+                uid: currentUser.uid,
+                name: currentUser.email.split('@')[0],
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            input.value = '';
+        });
+
+        // --- 4. GUILD SYSTEM LOGIC ---
+        
+        // A. Check if user is in a guild
+        function checkGuildStatus() {
+            db.collection('users').doc(currentUser.uid).get().then(doc => {
+                const data = doc.data();
+                if(data.guildId) {
+                    myGuildId = data.guildId;
+                    showGuildView(data.guildId);
+                } else {
+                    showGuildBrowser();
+                }
+            });
+        }
+
+        // B. Create Guild
+        function createGuild() {
+            const name = document.getElementById('new-guild-name').value;
+            if(!name) return alert("Enter a Guild Name");
+
+            // 1. Create Guild Doc
+            db.collection('guilds').add({
+                name: name,
+                leader: currentUser.uid,
+                members: [currentUser.uid],
+                points: 0
+            }).then((docRef) => {
+                // 2. Update User Doc
+                db.collection('users').doc(currentUser.uid).update({
+                    guildId: docRef.id
+                }).then(() => {
+                    location.reload(); // Refresh to show guild view
+                });
+            });
+        }
+
+        // C. Join Guild
+        function joinGuild(guildId) {
+            db.collection('users').doc(currentUser.uid).update({ guildId: guildId });
+            db.collection('guilds').doc(guildId).update({
+                members: firebase.firestore.FieldValue.arrayUnion(currentUser.uid)
+            }).then(() => location.reload());
+        }
+
+        // D. Show Browser (List of Guilds)
+        function showGuildBrowser() {
+            document.getElementById('guild-browser').style.display = 'block';
+            document.getElementById('my-guild-view').style.display = 'none';
+
+            const list = document.getElementById('guild-list');
+            db.collection('guilds').limit(10).get().then(snapshot => {
+                list.innerHTML = '';
+                snapshot.forEach(doc => {
+                    const g = doc.data();
+                    list.innerHTML += `
+                        <div class="guild-card">
+                            <div>
+                                <h3 style="color: white;">${g.name}</h3>
+                                <small style="color: gray;">Members: ${g.members.length}</small>
+                            </div>
+                            <button onclick="joinGuild('${doc.id}')" class="btn-primary" style="padding: 0.5rem 1rem;">JOIN</button>
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        // E. Show My Guild View
+        function showGuildView(guildId) {
+            document.getElementById('guild-browser').style.display = 'none';
+            document.getElementById('my-guild-view').style.display = 'block';
+
+            // Load Name
+            db.collection('guilds').doc(guildId).get().then(doc => {
+                document.getElementById('guild-title-display').innerText = doc.data().name + " [OPS]";
+            });
+
+            // Load Guild Chat
+            const chatWin = document.getElementById('guild-chat-window');
+            db.collection('guilds').doc(guildId).collection('messages').orderBy('timestamp', 'asc').limitToLast(50)
+              .onSnapshot(snap => {
+                  chatWin.innerHTML = '';
+                  snap.forEach(d => {
+                      const msg = d.data();
+                      const isMine = msg.uid === currentUser.uid;
+                      chatWin.innerHTML += `
+                        <div class="message ${isMine ? 'msg-mine' : 'msg-other'}">
+                             <small style="color: gold; font-size: 0.7rem;">${msg.name}</small><br>
+                             ${msg.text}
+                        </div>`;
+                  });
+                  chatWin.scrollTop = chatWin.scrollHeight;
+              });
+
+            // Handle Sending Guild Messages
+            document.getElementById('guild-chat-form').onsubmit = (e) => {
+                e.preventDefault();
+                const inp = document.getElementById('guild-msg-input');
+                if(!inp.value.trim()) return;
+                
+                db.collection('guilds').doc(guildId).collection('messages').add({
+                    text: inp.value,
+                    uid: currentUser.uid,
+                    name: currentUser.email.split('@')[0],
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                inp.value = '';
+            };
+        }
+
+        // F. Leave Guild
+        function leaveGuild() {
+            if(!confirm("Abandon your team?")) return;
+            db.collection('users').doc(currentUser.uid).update({ guildId: firebase.firestore.FieldValue.delete() });
+            location.reload();
+        }
+    </script>
+</body>
+</html>
