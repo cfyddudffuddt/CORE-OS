@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CORE | PROJECT LAB</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <nav class="glass-panel" style="position: fixed; top: 0; width: 100%; z-index: 100;">
+        <div class="logo">C.O.R.E <span class="blink">_</span></div>
+        <div class="user-menu">
+            <a href="dashboard.html" class="btn-secondary">RETURN TO BASE</a>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <a href="dashboard.html"><i class="fa-solid fa-chart-line"></i> OVERVIEW</a>
+            <a href="learning.html"><i class="fa-solid fa-graduation-cap"></i> LEARNING HUB</a>
+            <a href="#" class="active"><i class="fa-solid fa-microchip"></i> PROJECT LAB</a>
+            <a href="leaderboard.html"><i class="fa-solid fa-trophy"></i> LEADERBOARD</a>
+        </aside>
+
+        <main class="main-content">
+            <div class="section-header">
+                <h2>PROJECT SUBMISSION PROTOCOL</h2>
+                <div class="line"></div>
+            </div>
+
+            <div class="glass-panel" style="max-width: 800px; margin: 0 auto; padding: 2rem;">
+                <form id="project-form">
+                    
+                    <div class="input-group">
+                        <label style="display: block; margin-bottom: 0.5rem; color: var(--neon-cyan); font-family: 'Orbitron';">CODENAME (PROJECT TITLE)</label>
+                        <input type="text" id="p-title" placeholder="Ex: Autonomous Rover Mk-1" required 
+                               style="width: 100%; padding: 1rem; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); color: white;">
+                    </div>
+
+                    <div class="input-group" style="margin-top: 1.5rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; color: var(--neon-cyan); font-family: 'Orbitron';">TECHNOLOGIES USED</label>
+                        <input type="text" id="p-tech" placeholder="Ex: Arduino, Python, OpenCV, 3D Printing" required 
+                               style="width: 100%; padding: 1rem; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); color: white;">
+                    </div>
+
+                    <div class="input-group" style="margin-top: 1.5rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; color: var(--neon-cyan); font-family: 'Orbitron';">BLUEPRINT LINK (GITHUB / DRIVE)</label>
+                        <input type="url" id="p-link" placeholder="https://github.com/..." required 
+                               style="width: 100%; padding: 1rem; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); color: white;">
+                    </div>
+
+                    <div class="input-group" style="margin-top: 1.5rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; color: var(--neon-cyan); font-family: 'Orbitron';">MISSION REPORT (DESCRIPTION)</label>
+                        <textarea id="p-desc" rows="5" placeholder="Briefly explain the mechanism and objective..." required
+                                  style="width: 100%; padding: 1rem; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); color: white; font-family: 'Space Grotesk';"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-primary" style="width: 100%; margin-top: 2rem;">
+                        UPLOAD TO MAINFRAME (+500 PTS)
+                    </button>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+
+    <script>
+        // Note: 'auth' and 'db' are already created in firebase-config.js
+        const form = document.getElementById('project-form');
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault(); // Stop page from reloading
+
+            const user = auth.currentUser;
+            if(!user) {
+                alert("ERROR: AUTHENTICATION REQUIRED");
+                return;
+            }
+
+            // 1. Gather Data
+            const projectData = {
+                title: document.getElementById('p-title').value,
+                tech: document.getElementById('p-tech').value,
+                link: document.getElementById('p-link').value,
+                desc: document.getElementById('p-desc').value,
+                author_email: user.email,
+                author_id: user.uid,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            // 2. Save Project to 'projects' collection
+            db.collection('projects').add(projectData).then(() => {
+                
+                // 3. Update User Stats (Add 500 Points & Increment Project Count)
+                const userRef = db.collection('users').doc(user.uid);
+                
+                userRef.update({
+                    points: firebase.firestore.FieldValue.increment(500),
+                    projects_built: firebase.firestore.FieldValue.increment(1)
+                }).then(() => {
+                    alert("PROJECT UPLOADED SUCCESSFULLY. +500 INNOVATION POINTS AWARDED.");
+                    window.location.href = "dashboard.html";
+                });
+
+            }).catch((error) => {
+                console.error("Error writing document: ", error);
+                alert("UPLOAD FAILED: " + error.message);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -507,3 +507,13 @@ h1 {
 .leaderboard-table tr:hover {
     background: rgba(255, 255, 255, 0.02);
 }
+/* --- FORM ELEMENTS --- */
+input:focus, textarea:focus {
+    outline: none;
+    border-color: var(--neon-cyan) !important;
+    box-shadow: 0 0 10px rgba(0, 243, 255, 0.2);
+}
+
+textarea {
+    resize: vertical;
+}
