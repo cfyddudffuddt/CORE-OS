@@ -74,8 +74,21 @@
 
     <script>
                 // Check Login Status
+       // Check Login Status
         auth.onAuthStateChanged(user => {
             if (user) {
+                // --- 1. ADMIN CHECK (SECRET BUTTON) ---
+                const ADMIN_EMAIL = "futurevisioual2020@gmail.com"; // <--- YOUR EMAIL
+                if (user.email === ADMIN_EMAIL) {
+                    const sidebar = document.querySelector('.sidebar');
+                    sidebar.innerHTML += `
+                        <a href="admin.html" style="border: 1px solid red; color: red; margin-top: 2rem;">
+                            <i class="fa-solid fa-lock"></i> ADMIN PANEL
+                        </a>
+                    `;
+                }
+
+                // --- 2. LOAD DASHBOARD DATA (For Everyone) ---
                 console.log("AUTHORIZED: " + user.email);
                 document.getElementById('user-greeting').innerText = "WELCOME BACK, " + user.email.split('@')[0].toUpperCase();
 
@@ -88,8 +101,9 @@
                         document.querySelector('.user-rank').innerText = "CURRENT RANK: " + (data.rank || "EXPLORER");
                     }
                 });
+
             } else {
-                // If not logged in, go back to home
+                // --- 3. NO USER DETECTED -> KICK OUT ---
                 window.location.href = "index.html";
             }
         });

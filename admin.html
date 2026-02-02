@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CORE | OVERWATCH</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .admin-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+        .admin-table th { text-align: left; padding: 1rem; color: var(--neon-cyan); border-bottom: 1px solid white; }
+        .admin-table td { padding: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .btn-danger { background: #ff2e2e; color: white; border: none; padding: 0.3rem 0.8rem; cursor: pointer; font-family: 'Orbitron'; }
+        .btn-danger:hover { background: red; box-shadow: 0 0 10px red; }
+    </style>
+</head>
+<body>
+
+    <nav class="glass-panel" style="position: fixed; top: 0; width: 100%; z-index: 100; border-bottom: 1px solid red;">
+        <div class="logo" style="color: red;">C.O.R.E [ADMIN]</div>
+        <div class="user-menu"><a href="dashboard.html" class="btn-secondary">EXIT GOD MODE</a></div>
+    </nav>
+
+    <div class="dashboard-container">
+        <main class="main-content" style="margin-left: 0; max-width: 1200px; margin: 0 auto;">
+            
+            <div class="section-header">
+                <h2 style="color: red;">SYSTEM PURGE CONTROLS</h2>
+                <div class="line" style="background: red;"></div>
+            </div>
+
+            <div style="margin-bottom: 2rem;">
+                <button class="tab-btn active" onclick="loadData('chat')">GLOBAL CHAT LOGS</button>
+                <button class="tab-btn" onclick="loadData('projects')">PROJECT DATABASE</button>
+                <button class="tab-btn" onclick="loadData('users')">USER REGISTRY</button>
+            </div>
+
+            <div class="glass-panel" style="min-height: 400px;">
+                <table class="admin-table">
+                    <thead id="table-head">
+                        </thead>
+                    <tbody id="table-body">
+                        <tr><td colspan="4">SELECT A DATABASE...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+
+    <script>
+        const tableHead = document.getElementById('table-head');
+        const tableBody = document.getElementById('table-body');
+
+        // ==========================================
+        // 🔒 SECURITY PROTOCOL (CHANGE THIS EMAIL!)
+        // ==========================================
+        const ADMIN_EMAIL = "futurevisioual2020@gmail.com"; // <--- PASTE YOUR EMAIL HERE
+        
+        auth.onAuthStateChanged(user => {
+            if (user && user.email === ADMIN_EMAIL) {
+                console.log("ADMIN CLEARANCE GRANTED");
+                loadData('chat'); // Load chat by default
+            } else {
+                alert("⛔ SECURITY ALERT: UNAUTHORIZED ACCESS DETECTED.");
+                window.location.href = "dashboard.html";
+            }
+        });
+
+        // --- LOAD DATA ---
+        function loadData(type) {
+            tableBody.innerHTML = '<tr><td>LOADING DATA...</td></tr>';
+            
+            if (type === 'chat') {
+                tableHead.innerHTML = '<tr><th>SENDER</th><th>MESSAGE</th><th>TIME</th><th>ACTION</th></tr>';
+                db.collection('global_chat').orderBy('timestamp', 'desc').limit(50).get().then(snap => {
+                    let html = '';
+                    snap.forEach(doc => {
+                        const d = doc.data();
+                        html += `<tr>
+                            <td>${d.name}</td>
+                            <td style="color: gray;">${d.text}</td>
+                            <td>${d.timestamp ? new Date(d.timestamp.seconds * 1000).toLocaleTimeString() : '...'}</td>
+                            <td><button class="btn-danger" onclick="deleteItem('global_chat', '${doc.id}')">DELETE</button></td>
+                        </tr>`;
+                    });
+                    tableBody.innerHTML = html;
+                });
+            }
+            
+            else if (type === 'projects') {
+                tableHead.innerHTML = '<tr><th>AUTHOR</th><th>TITLE</th><th>LINK</th><th>ACTION</th></tr>';
+                db.collection('projects').orderBy('timestamp', 'desc').get().then(snap => {
+                    let html = '';
+                    snap.forEach(doc => {
+                        const d = doc.data();
+                        html += `<tr>
+                            <td>${d.author_email}</td>
+                            <td style="color: var(--neon-cyan);">${d.title}</td>
+                            <td><a href="${d.link}" target="_blank" style="color: white;">VIEW</a></td>
+                            <td><button class="btn-danger" onclick="deleteItem('projects', '${doc.id}')">NUKE</button></td>
+                        </tr>`;
+                    });
+                    tableBody.innerHTML = html;
+                });
+            }
+
+            else if (type === 'users') {
+                tableHead.innerHTML = '<tr><th>EMAIL</th><th>RANK</th><th>POINTS</th><th>ACTION</th></tr>';
+                db.collection('users').orderBy('points', 'desc').get().then(snap => {
+                    let html = '';
+                    snap.forEach(doc => {
+                        const d = doc.data();
+                        html += `<tr>
+                            <td>${d.email}</td>
+                            <td>${d.rank || 'Explorer'}</td>
+                            <td style="color: gold;">${d.points}</td>
+                            <td><button class="btn-danger" onclick="deleteItem('users', '${doc.id}')">BAN</button></td>
+                        </tr>`;
+                    });
+                    tableBody.innerHTML = html;
+                });
+            }
+        }
+
+        // --- DELETE ITEM ---
+        function deleteItem(collection, id) {
+            if(confirm("WARNING: CONFIRM DELETION? This cannot be undone.")) {
+                db.collection(collection).doc(id).delete().then(() => {
+                    alert("TARGET ELIMINATED.");
+                    // Reload current view
+                    if(collection === 'global_chat') loadData('chat');
+                    if(collection === 'projects') loadData('projects');
+                    if(collection === 'users') loadData('users');
+                });
+            }
+        }
+    </script>
+</body>
+</html>
