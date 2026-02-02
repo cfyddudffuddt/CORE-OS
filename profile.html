@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CORE | ID CARD</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#00F3FF">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <nav class="glass-panel" style="position: fixed; top: 0; width: 100%; z-index: 100;">
+        <div class="logo">C.O.R.E <span class="blink">_</span></div>
+        <div class="user-menu"><a href="dashboard.html" class="btn-secondary">RETURN TO BASE</a></div>
+    </nav>
+
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <a href="dashboard.html"><i class="fa-solid fa-chart-line"></i> OVERVIEW</a>
+            <a href="learning.html"><i class="fa-solid fa-graduation-cap"></i> LEARNING HUB</a>
+            <a href="project.html"><i class="fa-solid fa-microchip"></i> PROJECT LAB</a>
+            <a href="community.html"><i class="fa-solid fa-users"></i> COMMUNITY</a>
+            <a href="leaderboard.html"><i class="fa-solid fa-trophy"></i> LEADERBOARD</a>
+            <a href="profile.html" class="active"><i class="fa-solid fa-id-card"></i> MY PROFILE</a>
+        </aside>
+
+        <main class="main-content">
+            
+            <div class="section-header">
+                <h2>OPERATIVE IDENTITY</h2>
+                <div class="line"></div>
+            </div>
+
+            <div class="glass-panel" style="max-width: 600px; margin: 0 auto; text-align: center;">
+                
+                <div style="margin-bottom: 2rem;">
+                    <img id="preview-img" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" 
+                         style="width: 120px; height: 120px; border-radius: 50%; border: 2px solid var(--neon-cyan); object-fit: cover;">
+                    <h2 id="display-name" style="margin-top: 1rem; color: white;">UNKNOWN PILOT</h2>
+                    <p id="display-email" style="color: gray; font-size: 0.9rem;">loading...</p>
+                </div>
+
+                <form id="profile-form" style="text-align: left;">
+                    
+                    <label style="color: var(--neon-cyan);">FULL NAME</label>
+                    <input type="text" id="inp-name" placeholder="Enter Name" required 
+                           style="width: 100%; padding: 0.8rem; margin-bottom: 1rem; background: rgba(0,0,0,0.5); border: 1px solid gray; color: white;">
+
+                    <div style="display: flex; gap: 1rem;">
+                        <div style="flex: 1;">
+                            <label style="color: var(--neon-cyan);">AGE</label>
+                            <input type="number" id="inp-age" placeholder="Age" required 
+                                   style="width: 100%; padding: 0.8rem; margin-bottom: 1rem; background: rgba(0,0,0,0.5); border: 1px solid gray; color: white;">
+                        </div>
+                        <div style="flex: 1;">
+                            <label style="color: var(--neon-cyan);">GENDER</label>
+                            <select id="inp-gender" style="width: 100%; padding: 0.8rem; margin-bottom: 1rem; background: rgba(0,0,0,0.5); border: 1px solid gray; color: white;">
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Non-Binary">Non-Binary</option>
+                                <option value="Hidden">Classified</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <label style="color: var(--neon-cyan);">PROFILE PHOTO URL (LINK)</label>
+                    <input type="url" id="inp-photo" placeholder="https://example.com/my-photo.jpg" 
+                           style="width: 100%; padding: 0.8rem; margin-bottom: 0.5rem; background: rgba(0,0,0,0.5); border: 1px solid gray; color: white;">
+                    <small style="color: gray; display: block; margin-bottom: 1rem;">*Paste a direct link to an image (e.g., from LinkedIn, GitHub, or Discord).</small>
+
+                    <button type="submit" class="btn-primary" style="width: 100%;">UPDATE IDENTITY RECORD</button>
+                </form>
+
+            </div>
+
+        </main>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+
+    <script>
+        const form = document.getElementById('profile-form');
+        
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                // LOAD EXISTING DATA
+                db.collection('users').doc(user.uid).get().then(doc => {
+                    const data = doc.data();
+                    document.getElementById('display-email').innerText = user.email;
+                    
+                    if (data.displayName) {
+                        document.getElementById('display-name').innerText = data.displayName;
+                        document.getElementById('inp-name').value = data.displayName;
+                    }
+                    if (data.photoURL) {
+                        document.getElementById('preview-img').src = data.photoURL;
+                        document.getElementById('inp-photo').value = data.photoURL;
+                    }
+                    if (data.age) document.getElementById('inp-age').value = data.age;
+                    if (data.gender) document.getElementById('inp-gender').value = data.gender;
+                });
+            } else {
+                window.location.href = "index.html";
+            }
+        });
+
+        // SAVE DATA
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const user = auth.currentUser;
+            
+            const name = document.getElementById('inp-name').value;
+            const age = document.getElementById('inp-age').value;
+            const gender = document.getElementById('inp-gender').value;
+            const photo = document.getElementById('inp-photo').value;
+
+            // Update Database Document
+            db.collection('users').doc(user.uid).update({
+                displayName: name,
+                age: age,
+                gender: gender,
+                photoURL: photo
+            }).then(() => {
+                // Update Local Display
+                document.getElementById('display-name').innerText = name;
+                if(photo) document.getElementById('preview-img').src = photo;
+                alert("IDENTITY RECORD UPDATED SUCCESSFULLY.");
+            });
+        });
+
+        // Live Preview of Photo URL
+        document.getElementById('inp-photo').addEventListener('input', (e) => {
+            if(e.target.value) document.getElementById('preview-img').src = e.target.value;
+        });
+    </script>
+</body>
+</html>
