@@ -4,19 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CORE | OVERWATCH</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#00F3FF">
+    
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
-   <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#00F3FF">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <style>
         .admin-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
         .admin-table th { text-align: left; padding: 1rem; color: var(--neon-cyan); border-bottom: 1px solid white; }
         .admin-table td { padding: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .btn-danger { background: #ff2e2e; color: white; border: none; padding: 0.3rem 0.8rem; cursor: pointer; font-family: 'Orbitron'; }
-        .btn-danger:hover { background: red; box-shadow: 0 0 10px red; }
+        .btn-danger { background: #ff2e2e; color: white; border: none; padding: 0.3rem 0.8rem; cursor: pointer; font-family: 'Orbitron'; margin-right: 5px; }
+        .btn-promote { background: gold; color: black; border: none; padding: 0.3rem 0.8rem; cursor: pointer; font-family: 'Orbitron'; }
+        .admin-input { width: 100%; padding: 0.8rem; margin-bottom: 1rem; background: rgba(255,255,255,0.1); border: 1px solid gray; color: white; }
+        
+        /* HIDE TABS BY DEFAULT */
+        .restricted-tab { display: none; }
     </style>
 </head>
 <body>
@@ -30,24 +33,32 @@
         <main class="main-content" style="margin-left: 0; max-width: 1200px; margin: 0 auto;">
             
             <div class="section-header">
-                <h2 style="color: red;">SYSTEM PURGE CONTROLS</h2>
+                <h2 id="admin-title" style="color: red;">AUTHENTICATING...</h2>
                 <div class="line" style="background: red;"></div>
             </div>
 
             <div style="margin-bottom: 2rem;">
-                <button class="tab-btn active" onclick="loadData('chat')">GLOBAL CHAT LOGS</button>
-                <button class="tab-btn" onclick="loadData('projects')">PROJECT DATABASE</button>
-                <button class="tab-btn" onclick="loadData('users')">USER REGISTRY</button>
+                <button id="btn-chat" class="tab-btn restricted-tab" onclick="switchView('chat')">CHAT LOGS</button>
+                <button id="btn-proj" class="tab-btn restricted-tab" onclick="switchView('projects')">PROJECTS</button>
+                <button id="btn-user" class="tab-btn restricted-tab" onclick="switchView('users')">USER REGISTRY</button>
+                
+                <button id="btn-lesson" class="tab-btn restricted-tab" onclick="switchView('lessons')" style="color: gold; border-color: gold;">+ ADD LESSON</button>
             </div>
 
-            <div class="glass-panel" style="min-height: 400px;">
+            <div id="data-view" class="glass-panel" style="min-height: 400px; display:none;">
                 <table class="admin-table">
-                    <thead id="table-head">
-                        </thead>
-                    <tbody id="table-body">
-                        <tr><td colspan="4">SELECT A DATABASE...</td></tr>
-                    </tbody>
+                    <thead id="table-head"></thead>
+                    <tbody id="table-body"></tbody>
                 </table>
+            </div>
+
+            <div id="lesson-view" class="glass-panel" style="display: none; max-width: 600px; margin: 0 auto;">
+                <h3 style="color: gold; margin-bottom: 1rem;">UPLOAD NEW INTEL</h3>
+                <label>Lesson ID</label><input id="l-id" class="admin-input" placeholder="e.g. 1.2">
+                <label>Title</label><input id="l-title" class="admin-input" placeholder="e.g. Motors & Drivers">
+                <label>YouTube Embed URL</label><input id="l-video" class="admin-input" placeholder="https://www.youtube.com/embed/...">
+                <label>Content</label><textarea id="l-desc" class="admin-input" rows="5"></textarea>
+                <button onclick="uploadLesson()" class="btn-primary" style="width: 100%;">UPLOAD TO SERVER</button>
             </div>
 
         </main>
@@ -61,89 +72,148 @@
     <script>
         const tableHead = document.getElementById('table-head');
         const tableBody = document.getElementById('table-body');
+        const dataView = document.getElementById('data-view');
+        const lessonView = document.getElementById('lesson-view');
 
         // ==========================================
-        // 🔒 SECURITY PROTOCOL (CHANGE THIS EMAIL!)
+        // 🔒 CHANGE THIS TO YOUR EMAIL!
         // ==========================================
-        const ADMIN_EMAIL = "futurevisioual2020@gmail.com"; // <--- PASTE YOUR EMAIL HERE
-        
+        const SUPER_ADMIN = "futurevisioual2020@gmail.com"; 
+
         auth.onAuthStateChanged(user => {
-            if (user && user.email === ADMIN_EMAIL) {
-                console.log("ADMIN CLEARANCE GRANTED");
-                loadData('chat'); // Load chat by default
+            if (user) {
+                // 1. CHECK IF SUPER ADMIN (YOU)
+                if (user.email === SUPER_ADMIN) {
+                    setupSuperAdmin();
+                } 
+                // 2. CHECK IF SUB-ADMIN (INSTRUCTOR)
+                else {
+                    db.collection('users').doc(user.uid).get().then(doc => {
+                        const data = doc.data();
+                        if (data && data.role === 'instructor') {
+                            setupInstructor();
+                        } else {
+                            // 3. KICK OUT NORMAL USERS
+                            alert("ACCESS DENIED: CLEARANCE LEVEL TOO LOW.");
+                            window.location.href = "dashboard.html";
+                        }
+                    });
+                }
             } else {
-                alert("⛔ SECURITY ALERT: UNAUTHORIZED ACCESS DETECTED.");
-                window.location.href = "dashboard.html";
+                window.location.href = "index.html";
             }
         });
 
+        function setupSuperAdmin() {
+            document.getElementById('admin-title').innerText = "COMMANDER OVERWATCH";
+            // Show All Tabs
+            document.querySelectorAll('.restricted-tab').forEach(el => el.style.display = 'inline-block');
+            document.getElementById('btn-chat').classList.add('active');
+            dataView.style.display = 'block';
+            loadData('chat');
+        }
+
+        function setupInstructor() {
+            document.getElementById('admin-title').innerText = "INSTRUCTOR PANEL";
+            // Show Only Lesson Tab
+            document.getElementById('btn-lesson').style.display = 'inline-block';
+            document.getElementById('btn-lesson').classList.add('active');
+            switchView('lessons');
+        }
+
+        // --- SWITCH TABS ---
+        function switchView(type) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            // Highlight clicked button (need simple logic to find which button was clicked, simpler to just set active manually in UI logic or ignore visual strictness for now)
+            
+            if(type === 'lessons') {
+                dataView.style.display = 'none';
+                lessonView.style.display = 'block';
+            } else {
+                lessonView.style.display = 'none';
+                dataView.style.display = 'block';
+                loadData(type);
+            }
+        }
+
         // --- LOAD DATA ---
         function loadData(type) {
-            tableBody.innerHTML = '<tr><td>LOADING DATA...</td></tr>';
+            tableBody.innerHTML = '<tr><td>SCANNING DATABASE...</td></tr>';
             
-            if (type === 'chat') {
-                tableHead.innerHTML = '<tr><th>SENDER</th><th>MESSAGE</th><th>TIME</th><th>ACTION</th></tr>';
-                db.collection('global_chat').orderBy('timestamp', 'desc').limit(50).get().then(snap => {
-                    let html = '';
-                    snap.forEach(doc => {
-                        const d = doc.data();
-                        html += `<tr>
-                            <td>${d.name}</td>
-                            <td style="color: gray;">${d.text}</td>
-                            <td>${d.timestamp ? new Date(d.timestamp.seconds * 1000).toLocaleTimeString() : '...'}</td>
-                            <td><button class="btn-danger" onclick="deleteItem('global_chat', '${doc.id}')">DELETE</button></td>
-                        </tr>`;
-                    });
-                    tableBody.innerHTML = html;
-                });
-            }
-            
-            else if (type === 'projects') {
-                tableHead.innerHTML = '<tr><th>AUTHOR</th><th>TITLE</th><th>LINK</th><th>ACTION</th></tr>';
-                db.collection('projects').orderBy('timestamp', 'desc').get().then(snap => {
-                    let html = '';
-                    snap.forEach(doc => {
-                        const d = doc.data();
-                        html += `<tr>
-                            <td>${d.author_email}</td>
-                            <td style="color: var(--neon-cyan);">${d.title}</td>
-                            <td><a href="${d.link}" target="_blank" style="color: white;">VIEW</a></td>
-                            <td><button class="btn-danger" onclick="deleteItem('projects', '${doc.id}')">NUKE</button></td>
-                        </tr>`;
-                    });
-                    tableBody.innerHTML = html;
-                });
-            }
-
-            else if (type === 'users') {
-                tableHead.innerHTML = '<tr><th>EMAIL</th><th>RANK</th><th>POINTS</th><th>ACTION</th></tr>';
+            if (type === 'users') {
+                tableHead.innerHTML = '<tr><th>EMAIL</th><th>ROLE</th><th>ACTION</th></tr>';
                 db.collection('users').orderBy('points', 'desc').get().then(snap => {
                     let html = '';
                     snap.forEach(doc => {
                         const d = doc.data();
+                        const role = d.role || "Student";
+                        const isInstructor = role === 'instructor';
+                        
                         html += `<tr>
                             <td>${d.email}</td>
-                            <td>${d.rank || 'Explorer'}</td>
-                            <td style="color: gold;">${d.points}</td>
-                            <td><button class="btn-danger" onclick="deleteItem('users', '${doc.id}')">BAN</button></td>
+                            <td style="color:${isInstructor ? 'gold' : 'gray'}">${role.toUpperCase()}</td>
+                            <td>
+                                <button class="btn-danger" onclick="nuke('users', '${doc.id}')">BAN</button>
+                                ${!isInstructor ? `<button class="btn-promote" onclick="promoteUser('${doc.id}')">PROMOTE</button>` : ''}
+                                ${isInstructor ? `<button class="btn-danger" style="background:orange;" onclick="demoteUser('${doc.id}')">DEMOTE</button>` : ''}
+                            </td>
                         </tr>`;
                     });
+                    tableBody.innerHTML = html;
+                });
+            }
+            else if (type === 'chat') {
+                // (Existing Chat Logic)
+                tableHead.innerHTML = '<tr><th>USER</th><th>MSG</th><th>ACT</th></tr>';
+                db.collection('global_chat').orderBy('timestamp', 'desc').limit(20).get().then(snap => {
+                    let html = '';
+                    snap.forEach(doc => html += `<tr><td>${doc.data().name}</td><td>${doc.data().text}</td><td><button class="btn-danger" onclick="nuke('global_chat', '${doc.id}')">X</button></td></tr>`);
+                    tableBody.innerHTML = html;
+                });
+            }
+            else if (type === 'projects') {
+                // (Existing Project Logic)
+                tableHead.innerHTML = '<tr><th>TITLE</th><th>LINK</th><th>ACT</th></tr>';
+                db.collection('projects').orderBy('timestamp', 'desc').get().then(snap => {
+                    let html = '';
+                    snap.forEach(doc => html += `<tr><td>${doc.data().title}</td><td><a href="${doc.data().link}" target="_blank" style="color:cyan">VIEW</a></td><td><button class="btn-danger" onclick="nuke('projects', '${doc.id}')">X</button></td></tr>`);
                     tableBody.innerHTML = html;
                 });
             }
         }
 
-        // --- DELETE ITEM ---
-        function deleteItem(collection, id) {
-            if(confirm("WARNING: CONFIRM DELETION? This cannot be undone.")) {
-                db.collection(collection).doc(id).delete().then(() => {
-                    alert("TARGET ELIMINATED.");
-                    // Reload current view
-                    if(collection === 'global_chat') loadData('chat');
-                    if(collection === 'projects') loadData('projects');
-                    if(collection === 'users') loadData('users');
-                });
+        // --- ACTIONS ---
+        function uploadLesson() {
+            const id = document.getElementById('l-id').value;
+            const title = document.getElementById('l-title').value;
+            const video = document.getElementById('l-video').value;
+            const desc = document.getElementById('l-desc').value;
+            if(!id || !title) return alert("Missing Data");
+
+            db.collection('lessons').doc(id).set({
+                id, title, video, desc, timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => { alert("LESSON LIVE!"); document.getElementById('l-title').value=''; });
+        }
+
+        function promoteUser(uid) {
+            if(confirm("Promote this user to INSTRUCTOR? They will be able to upload lessons.")) {
+                db.collection('users').doc(uid).update({ role: 'instructor' }).then(() => loadData('users'));
             }
+        }
+
+        function demoteUser(uid) {
+            if(confirm("Revoke INSTRUCTOR status?")) {
+                db.collection('users').doc(uid).update({ role: 'student' }).then(() => loadData('users'));
+            }
+        }
+
+        function nuke(col, id) {
+            if(confirm("Confirm Delete?")) db.collection(col).doc(id).delete().then(() => {
+                // Refresh view
+                if(col === 'users') loadData('users');
+                else if(col === 'global_chat') loadData('chat');
+                else loadData('projects');
+            });
         }
     </script>
 </body>

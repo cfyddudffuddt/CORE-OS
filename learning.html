@@ -4,13 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CORE | ACADEMY</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#00F3FF">
+    
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
-   <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#00F3FF">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 </head>
 <body class="academy-body">
 
@@ -22,30 +21,30 @@
     </nav>
 
     <div class="academy-container">
+        
         <aside class="curriculum-panel glass-panel">
             <h3 style="padding: 1rem; border-bottom: 1px solid var(--glass-border); color: gold;">Phase 1: IGNITION</h3>
-            <div class="module-list">
-                <div class="lesson-item active" onclick="loadLesson(1)">
-                    <i class="fa-regular fa-circle-play"></i> <span>1.1 System Architecture</span>
-                </div>
+            <div id="module-list" class="module-list">
+                <div style="padding:1rem; color:gray;">LOADING DATA...</div>
             </div>
         </aside>
 
         <main class="content-viewer">
+            
             <div class="video-frame glass-panel">
-                <div class="video-placeholder">
+                <iframe id="video-player" width="100%" height="100%" src="" frameborder="0" allowfullscreen style="display:none;"></iframe>
+                <div id="video-placeholder" class="video-placeholder">
                     <i class="fa-solid fa-play" style="font-size: 3rem; color: var(--neon-cyan);"></i>
-                    <p>VIDEO FEED OFFLINE (DEMO MODE)</p>
+                    <p>SELECT A LESSON</p>
                 </div>
             </div>
 
             <div class="lesson-content glass-panel">
-                <h1 id="lesson-title">1.1 System Architecture</h1>
-                <p style="color: rgba(255,255,255,0.7); line-height: 1.6;">
-                    Welcome to the foundation of robotics. In this module, we explore the interaction between 
-                    Mechanical Structure, Electronics (Nervous System), and Software (Brain).
+                <h1 id="lesson-title">Welcome, Pilot</h1>
+                <p id="lesson-desc" style="color: rgba(255,255,255,0.7); line-height: 1.6;">
+                    Select a module from the left to begin your instruction.
                 </p>
-                <button class="btn-primary" onclick="completeModule()" style="margin-top: 2rem;">COMPLETE MODULE</button>
+                <button class="btn-primary" onclick="completeModule()" style="margin-top: 2rem;">COMPLETE MODULE (+100 PTS)</button>
             </div>
         </main>
     </div>
@@ -56,36 +55,64 @@
     <script src="firebase-config.js"></script>
 
     <script>
-        
+        const moduleList = document.getElementById('module-list');
+        let allLessons = {}; // Store lesson data here
+
+        // 1. LOAD LESSONS FROM DB
+        db.collection('lessons').orderBy('id').onSnapshot(snapshot => {
+            moduleList.innerHTML = ''; // Clear list
+            
+            if(snapshot.empty) {
+                moduleList.innerHTML = '<div style="padding:1rem">No lessons found. Ask Admin to upload.</div>';
+                return;
+            }
+
+            snapshot.forEach(doc => {
+                const lesson = doc.data();
+                allLessons[lesson.id] = lesson; // Save for later
+
+                // Create Sidebar Item
+                const item = document.createElement('div');
+                item.className = 'lesson-item';
+                item.innerHTML = `<i class="fa-regular fa-circle-play"></i> <span>${lesson.id} ${lesson.title}</span>`;
+                item.onclick = () => playLesson(lesson.id);
+                moduleList.appendChild(item);
+            });
+        });
+
+        // 2. PLAY LESSON FUNCTION
+        function playLesson(id) {
+            const data = allLessons[id];
+            
+            // Highlight active item
+            document.querySelectorAll('.lesson-item').forEach(el => el.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+
+            // Update Text
+            document.getElementById('lesson-title').innerText = data.id + ": " + data.title;
+            document.getElementById('lesson-desc').innerText = data.desc;
+
+            // Update Video
+            const player = document.getElementById('video-player');
+            const placeholder = document.getElementById('video-placeholder');
+
+            if(data.video) {
+                player.src = data.video;
+                player.style.display = 'block';
+                placeholder.style.display = 'none';
+            } else {
+                player.style.display = 'none';
+                placeholder.style.display = 'block';
+            }
+        }
+
+        // 3. COMPLETE BUTTON (Same as before)
         function completeModule() {
             const user = auth.currentUser;
-            
-            if (user) {
-                const userRef = db.collection('users').doc(user.uid);
-
-                userRef.get().then((doc) => {
-                    if (doc.exists) {
-                        userRef.update({
-                            points: firebase.firestore.FieldValue.increment(100),
-                            modules_completed: firebase.firestore.FieldValue.increment(1)
-                        }).then(() => {
-                            alert("MODULE COMPLETE! +100 INNOVATION POINTS AWARDED.");
-                            window.location.href = "dashboard.html";
-                        });
-                    } else {
-                        userRef.set({
-                            email: user.email,
-                            points: 100,
-                            modules_completed: 1,
-                            rank: "Explorer"
-                        }).then(() => {
-                            alert("FIRST MISSION COMPLETE! +100 POINTS.");
-                            window.location.href = "dashboard.html";
-                        });
-                    }
-                });
-            } else {
-                alert("ERROR: YOU MUST BE LOGGED IN.");
+            if(user) {
+                db.collection('users').doc(user.uid).update({
+                    points: firebase.firestore.FieldValue.increment(100)
+                }).then(() => alert("POINTS AWARDED!"));
             }
         }
     </script>
