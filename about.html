@@ -4,23 +4,59 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CORE | SYSTEM MANUAL</title>
+    
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#00F3FF">
     
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
+    
     <style>
+        /* PAGE SPECIFIC STYLES */
         .manual-section { margin-bottom: 3rem; }
         .manual-title { color: var(--neon-cyan); font-family: 'Orbitron'; margin-bottom: 1rem; border-left: 3px solid var(--neon-cyan); padding-left: 1rem; }
-        .rule-item { background: rgba(255,255,255,0.05); padding: 1rem; margin-bottom: 0.5rem; border-radius: 5px; border: 1px solid transparent; }
-        .rule-item:hover { border-color: red; background: rgba(255,0,0,0.1); }
+        .rule-item { background: rgba(255,255,255,0.05); padding: 1rem; margin-bottom: 0.5rem; border-radius: 5px; border: 1px solid transparent; transition: 0.3s; }
+        .rule-item:hover { border-color: red; background: rgba(255,0,0,0.1); transform: translateX(5px); }
         
-        /* STAFF CARDS */
-        .staff-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem; }
-        .staff-card { background: rgba(0,0,0,0.6); border: 1px solid gold; padding: 1.5rem; text-align: center; border-radius: 10px; }
-        .dev-card { border-color: var(--neon-cyan); box-shadow: 0 0 15px rgba(0, 243, 255, 0.2); }
-        .staff-role { font-size: 0.8rem; color: gray; letter-spacing: 2px; margin-top: 0.5rem; display: block; }
+        /* STAFF CARD GRID */
+        .staff-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.5rem; margin-top: 1rem; }
+        
+        .staff-card { 
+            background: rgba(0,0,0,0.6); 
+            border: 1px solid rgba(255,255,255,0.1); 
+            padding: 2rem 1.5rem; 
+            text-align: center; 
+            border-radius: 10px; 
+            transition: 0.3s;
+        }
+        
+        .staff-card:hover { transform: translateY(-5px); background: rgba(255,255,255,0.05); }
+
+        /* DEVELOPER CARD (SPECIAL STYLE) */
+        .dev-card { 
+            border-color: var(--neon-cyan); 
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.1); 
+            background: linear-gradient(180deg, rgba(0,243,255,0.05) 0%, rgba(0,0,0,0.8) 100%);
+        }
+
+        .staff-role { font-size: 0.7rem; letter-spacing: 2px; margin-top: 0.5rem; display: block; text-transform: uppercase; }
+        
+        /* SKILL BADGES */
+        .skill-badge {
+            display: inline-block;
+            font-size: 0.6rem;
+            padding: 3px 8px;
+            margin: 2px;
+            border-radius: 4px;
+            background: rgba(0, 243, 255, 0.1);
+            color: var(--neon-cyan);
+            border: 1px solid var(--neon-cyan);
+        }
+
+        /* SOCIAL ICONS HOVER */
+        .social-link { color: gray; margin: 0 8px; font-size: 1.2rem; transition: 0.3s; }
+        .social-link:hover { color: white; transform: scale(1.2); display: inline-block; }
     </style>
 </head>
 <body>
@@ -37,6 +73,7 @@
             <a href="project.html"><i class="fa-solid fa-microchip"></i> PROJECT LAB</a>
             <a href="community.html"><i class="fa-solid fa-users"></i> COMMUNITY</a>
             <a href="leaderboard.html"><i class="fa-solid fa-trophy"></i> LEADERBOARD</a>
+            <a href="profile.html"><i class="fa-solid fa-id-card"></i> MY PROFILE</a>
             <a href="about.html" class="active"><i class="fa-solid fa-circle-info"></i> SYSTEM INFO</a>
         </aside>
 
@@ -55,28 +92,130 @@
                 </p>
                 <br>
                 <h3 class="manual-title">COMMS FREQUENCY (CONTACT)</h3>
-                <p>For technical support or security clearance issues:</p>
-                <div style="background: rgba(0,243,255,0.1); padding: 1rem; border: 1px solid var(--neon-cyan); display: inline-block; margin-top: 0.5rem;">
-                    <i class="fa-solid fa-envelope"></i> &nbsp; futurevisioual2020@gmail.com
+                <p>For technical support, security clearance, or bug reports:</p>
+                <div style="background: rgba(0,243,255,0.1); padding: 1rem; border: 1px solid var(--neon-cyan); display: inline-block; margin-top: 0.5rem; border-radius: 5px;">
+                    <i class="fa-solid fa-envelope" style="color: var(--neon-cyan);"></i> &nbsp; c.o.r.ecom.robotics@gmail.com
+
                 </div>
             </div>
 
             <div class="manual-section">
                 <h3 class="manual-title" style="color: gold; border-color: gold;">CHAIN OF COMMAND</h3>
-                <p>The following operatives maintain system stability and curriculum integrity.</p>
+                <p style="color: gray; margin-bottom: 1rem;">The following operatives maintain system stability and curriculum integrity.</p>
                 
                 <div class="staff-grid" id="staff-container">
                     
                     <div class="staff-card dev-card">
-                        <i class="fa-solid fa-code" style="font-size: 2rem; color: var(--neon-cyan); margin-bottom: 1rem;"></i>
-                        <h4 style="color: white;">SYSTEM ARCHITECT</h4>
-                        <span class="staff-role" style="color: var(--neon-cyan);">LEAD DEVELOPER</span>
-                        <p style="font-size: 0.8rem; margin-top: 0.5rem; color: #aaa;">Admin & Creator</p>
-                    </div>
+                        <div style="position: relative; display: inline-block;">
+                            <i class="fa-solid fa-user-astronaut" style="font-size: 3rem; color: var(--neon-cyan); margin-bottom: 1rem;"></i>
+                            <div style="position: absolute; bottom: 5px; right: -5px; background: #000; border-radius: 50%; padding: 2px;">
+                                <i class="fa-solid fa-check-circle" style="color: gold; font-size: 1rem;"></i>
+                            </div>
+                        </div>
+                        
+                        <h4 style="color: white; margin-bottom: 0;">SYSTEM ARCHITECT</h4>
+                        <span class="staff-role" style="color: var(--neon-cyan); font-weight: bold;">LEAD DEVELOPER</span>
+                        
+                        <div style="margin-top: 1rem; border-top: 1px solid rgba(0, 243, 255, 0.2); padding-top: 1rem;">
+                            <p style="color: white; font-weight: bold; font-size: 1.1rem; letter-spacing: 1px;">AKSHAY SURESH</p>
+                            <p style="font-size: 0.8rem; color: #ccc; margin-top: 5px;">III Year B.E. EEE</p>
+                            <p style="font-size: 0.7rem; color: gold; text-transform: uppercase; letter-spacing: 1px; margin-top: 2px;">Kangeyam Institute of Technology</p>
+                        </div>
 
+                        <div style="margin-top: 1rem;">
+                            <span class="skill-badge">ROBOTICS</span>
+                            <span class="skill-badge">AI SYSTEMS</span>
+                            <span class="skill-badge">FULL STACK</span>
+                        </div>
+
+                        <div style="margin-top: 1.5rem;">
+                            <a href="mailto:futurevisioual2020@gmail.com" class="social-link" title="Email"><i class="fa-solid fa-envelope"></i></a>
+                            <a href="https://github.com/cfyddudffuddt" class="social-link" target="_blank" title="GitHub"><i class="fa-brands fa-github"></i></a>
+                            <a href="https://www.linkedin.com/in/akshay-suresh-219503368?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" class="social-link" target="_blank" title="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
+                            <a href="https://www.instagram.com/__.general_noxus.__?igsh=dWV5dHR6a3JsODdx" class="social-link" target="_blank" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                        </div>
+                    </div>
                     </div>
             </div>
 
             <div class="glass-panel manual-section">
-                <h3 class="manual-title" style="border-color: red; color: #ff5555;">SYSTEM PROTOCOLS (RULES)</h3>
-                <div class="rule-item"><strong>1. PROFESSIONAL CONDUCT:</strong> All global and guild communications must remain
+                <h3 class="manual-title" style="border-color: #ff5555; color: #ff5555;">SYSTEM PROTOCOLS (RULES)</h3>
+                <div class="rule-item">
+                    <strong style="color: #ff5555;">1. PROFESSIONAL CONDUCT</strong><br>
+                    <span style="color: gray; font-size: 0.9rem;">All global and guild communications must remain constructive. Toxicity, hate speech, or harassment results in an immediate ban.</span>
+                </div>
+                <div class="rule-item">
+                    <strong style="color: #ff5555;">2. INTELLECTUAL PROPERTY</strong><br>
+                    <span style="color: gray; font-size: 0.9rem;">Only upload projects that you have built or contributed to. Plagiarism earns a permanent blacklist from the Leaderboard.</span>
+                </div>
+                <div class="rule-item">
+                    <strong style="color: #ff5555;">3. SECURITY INTEGRITY</strong><br>
+                    <span style="color: gray; font-size: 0.9rem;">Do not attempt to inject SQL or script attacks into the console. The system logs all intrusion attempts automatically.</span>
+                </div>
+            </div>
+
+            <div class="glass-panel manual-section">
+                <h3 class="manual-title">OPERATOR MANUAL</h3>
+                
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 250px;">
+                        <h4 style="color: white; margin-bottom: 0.5rem;"><i class="fa-solid fa-graduation-cap" style="color: var(--neon-cyan);"></i> Learning Hub</h4>
+                        <p style="font-size: 0.9rem; color: gray;">Access video modules uploaded by Instructors. Watch the content and click "Complete Module" to verify attendance and earn <strong>+100 Points</strong>.</p>
+                    </div>
+
+                    <div style="flex: 1; min-width: 250px;">
+                        <h4 style="color: white; margin-bottom: 0.5rem;"><i class="fa-solid fa-microchip" style="color: var(--neon-cyan);"></i> Project Lab</h4>
+                        <p style="font-size: 0.9rem; color: gray;">Submit your GitHub links and project summaries. Verified builds award <strong>+500 Points</strong> and increase your Engineer Rank.</p>
+                    </div>
+
+                    <div style="flex: 1; min-width: 250px;">
+                        <h4 style="color: white; margin-bottom: 0.5rem;"><i class="fa-solid fa-users" style="color: var(--neon-cyan);"></i> Guilds</h4>
+                        <p style="font-size: 0.9rem; color: gray;">Create or join a faction in the Community tab. Guilds allow for private encrypted chat channels separate from the global feed.</p>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+
+    <script>
+        // LOGIC: Fetch Instructors and display them
+        const staffContainer = document.getElementById('staff-container');
+
+        db.collection('users').where('role', '==', 'instructor').get().then(snapshot => {
+            if (snapshot.empty) {
+                console.log("No sub-instructors found.");
+            }
+
+            snapshot.forEach(doc => {
+                const user = doc.data();
+                // If the user has set a real name in Profile, use it. Otherwise use Email.
+                const name = user.displayName ? user.displayName.toUpperCase() : user.email.split('@')[0].toUpperCase();
+                
+                // Use their profile photo if set, otherwise default icon
+                const photo = user.photoURL ? `<img src="${user.photoURL}" style="width: 60px; height: 60px; border-radius: 50%; margin-bottom: 1rem; border: 2px solid gold;">` 
+                                            : `<i class="fa-solid fa-chalkboard-user" style="font-size: 3rem; color: gold; margin-bottom: 1rem;"></i>`;
+
+                // Inject HTML
+                staffContainer.innerHTML += `
+                    <div class="staff-card">
+                        ${photo}
+                        <h4 style="color: white; margin-bottom: 0;">${name}</h4>
+                        <span class="staff-role" style="color: gold;">MANAGING TUTOR</span>
+                        
+                        <div style="margin-top: 1rem; border-top: 1px solid rgba(255, 215, 0, 0.2); padding-top: 1rem;">
+                            <p style="font-size: 0.8rem; color: #ccc;">Instructor Access</p>
+                            <p style="font-size: 0.7rem; color: gold; margin-top: 5px;">Curriculum Manager</p>
+                        </div>
+                    </div>
+                `;
+            });
+        });
+    </script>
+</body>
+</html>
