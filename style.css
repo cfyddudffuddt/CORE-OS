@@ -482,3 +482,28 @@ h1 {
     .curriculum-panel { width: 100%; height: auto; max-height: 200px; }
     .academy-body { overflow: auto; }
 }
+/* --- LEADERBOARD --- */
+.leaderboard-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.leaderboard-table th {
+    text-align: left;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--neon-cyan);
+    font-family: var(--font-header);
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+}
+
+.leaderboard-table td {
+    padding: 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.leaderboard-table tr:hover {
+    background: rgba(255, 255, 255, 0.02);
+}

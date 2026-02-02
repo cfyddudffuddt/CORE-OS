@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CORE | GLOBAL RANKINGS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <nav class="glass-panel" style="position: fixed; top: 0; width: 100%; z-index: 100;">
+        <div class="logo">C.O.R.E <span class="blink">_</span></div>
+        <div class="user-menu">
+            <a href="dashboard.html" class="btn-secondary">RETURN TO BASE</a>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <a href="dashboard.html"><i class="fa-solid fa-chart-line"></i> OVERVIEW</a>
+            <a href="learning.html"><i class="fa-solid fa-graduation-cap"></i> LEARNING HUB</a>
+            <a href="#"><i class="fa-solid fa-microchip"></i> PROJECT LAB</a>
+            <a href="#" class="active"><i class="fa-solid fa-trophy"></i> LEADERBOARD</a>
+        </aside>
+
+        <main class="main-content">
+            <div class="section-header">
+                <h2>ELITE OPERATIVES</h2>
+                <div class="line"></div>
+            </div>
+
+            <div class="glass-panel" style="padding: 0;">
+                <table class="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th>RANK</th>
+                            <th>OPERATIVE ID</th>
+                            <th>TIER</th>
+                            <th>INNOVATION POINTS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboard-body">
+                        <tr>
+                            <td colspan="4" style="text-align: center; padding: 2rem; color: gray;">
+                                SCANNING DATABASE...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+
+    <script>
+        const db = firebase.firestore();
+        const tableBody = document.getElementById('leaderboard-body');
+
+        // QUERY: Get Top 10 Users sorted by Points
+        db.collection('users')
+          .orderBy('points', 'desc')
+          .limit(10)
+          .get()
+          .then((snapshot) => {
+              let html = '';
+              let rank = 1;
+
+              snapshot.forEach((doc) => {
+                  const data = doc.data();
+                  const isGold = rank === 1 ? 'color: gold; text-shadow: 0 0 10px gold;' : '';
+                  const rankBadge = rank === 1 ? '<i class="fa-solid fa-crown"></i> 1' : rank;
+                  
+                  // Hide full email for privacy (Show only first part)
+                  const username = data.email.split('@')[0].toUpperCase();
+
+                  html += `
+                    <tr style="${rank === 1 ? 'background: rgba(255, 215, 0, 0.1);' : ''}">
+                        <td style="font-family: 'Orbitron'; ${isGold}">${rankBadge}</td>
+                        <td style="font-weight: bold;">${username}</td>
+                        <td>${data.rank || "EXPLORER"}</td>
+                        <td style="color: var(--neon-cyan);">${data.points || 0} PTS</td>
+                    </tr>
+                  `;
+                  rank++;
+              });
+
+              tableBody.innerHTML = html;
+          });
+    </script>
+</body>
+</html>
