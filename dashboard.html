@@ -1,25 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>CORE | DASHBOARD</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
-</head>
-<body style="display: flex; justify-content: center; align-items: center; height: 100vh; flex-direction: column;">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CORE | COMMAND CENTER</title>
     
-    <h1 style="font-family: 'Orbitron'; color: #00F3FF; font-size: 3rem;">ACCESS GRANTED</h1>
-    <p style="color: white;">WELCOME TO THE NEURAL NETWORK</p>
-    <br>
-    <button onclick="logout()" class="btn-secondary">DISCONNECT</button>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <nav class="glass-panel" style="position: fixed; top: 0; width: 100%; z-index: 100;">
+        <div class="logo">C.O.R.E <span class="blink">_</span></div>
+        <div class="user-menu">
+            <button onclick="logout()" class="btn-secondary" style="font-size: 0.7rem; padding: 0.5rem 1rem;">TERMINATE SESSION</button>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        
+        <aside class="sidebar">
+            <a href="#" class="active"><i class="fa-solid fa-chart-line"></i> OVERVIEW</a>
+           <a href="learning.html"><i class="fa-solid fa-graduation-cap"></i> LEARNING HUB</a>
+            <a href="#"><i class="fa-solid fa-microchip"></i> PROJECT LAB</a>
+            <a href="#"><i class="fa-solid fa-trophy"></i> LEADERBOARD</a>
+            <a href="#"><i class="fa-solid fa-gear"></i> SETTINGS</a>
+        </aside>
+
+        <main class="main-content">
+            
+            <div class="welcome-banner">
+                <span class="user-rank">CURRENT RANK: EXPLORER</span>
+                <h1 id="user-greeting">WELCOME BACK, PILOT</h1>
+                <p>SYSTEM SYSTEMS NOMINAL. READY FOR INSTRUCTION.</p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-number" style="color: var(--neon-cyan);">0</span>
+                    <span class="stat-label">PROJECTS BUILT</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" style="color: var(--neon-blue);">0</span>
+                    <span class="stat-label">INNOVATION POINTS</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" style="color: gold;">1</span>
+                    <span class="stat-label">MODULES ACTIVE</span>
+                </div>
+            </div>
+
+            <div class="section-header">
+                <h2>ACTIVE DIRECTIVES</h2>
+                <div class="line"></div>
+            </div>
+            
+            <div class="card glass-panel" style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h3 style="color: var(--neon-cyan); margin-bottom: 0.5rem;">MISSION 1: SYSTEM INITIALIZATION</h3>
+                    <p>Complete your profile configuration to unlock the Learning Hub.</p>
+                </div>
+                <button class="btn-primary">BEGIN</button>
+            </div>
+
+        </main>
+    </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
-    <script src="firebase-config.js"></script>
     
+    <script src="firebase-config.js"></script>
+
     <script>
+        // SECURITY CHECK: Kick user out if not logged in
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                console.log("AUTHORIZED: " + user.email);
+                // Update the Greeting with their Email
+                document.getElementById('user-greeting').innerText = "WELCOME BACK, " + user.email.split('@')[0].toUpperCase();
+            } else {
+                console.log("UNAUTHORIZED ACCESS DETECTED");
+                window.location.href = "index.html";
+            }
+        });
+
         // LOGOUT FUNCTION
         function logout() {
-            firebase.auth().signOut().then(() => {
+            auth.signOut().then(() => {
                 window.location.href = "index.html";
             });
         }
