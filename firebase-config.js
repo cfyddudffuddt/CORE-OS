@@ -1,4 +1,5 @@
-// --- 1. PASTE YOUR KEYS INSIDE THIS BOX ---
+// 1. YOUR API KEYS
+// (Make sure to put your real keys back in here!)
 const firebaseConfig = {
   apiKey: "AIzaSyCIKoqUtc7IkUCEzDJVBDQ__tZWoAlzUa0",
   authDomain: "core-os-db.firebaseapp.com",
@@ -8,11 +9,11 @@ const firebaseConfig = {
   appId: "1:291952417111:web:eb4d651d53563091208612"
 };
 
-// --- 2. INITIALIZE FIREBASE (DO NOT TOUCH THIS PART) ---
-// This uses the "firebase" global variable we loaded in index.html
-firebase.initializeApp(firebaseConfig);
-
-// Initialize Authentication
-const auth = firebase.auth();
-
-console.log("FIREBASE CONNECTED: READY");
+// 2. INITIALIZE FIREBASE APP ONLY
+// We will start Auth and Database in the HTML files to prevent errors.
+if (typeof firebase !== 'undefined') {
+  firebase.initializeApp(firebaseConfig);
+  console.log("FIREBASE CONFIG LOADED");
+} else {
+  console.error("Error: Firebase libraries not loaded yet.");
+}

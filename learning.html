@@ -18,30 +18,16 @@
     </nav>
 
     <div class="academy-container">
-        
         <aside class="curriculum-panel glass-panel">
             <h3 style="padding: 1rem; border-bottom: 1px solid var(--glass-border); color: gold;">Phase 1: IGNITION</h3>
-            
             <div class="module-list">
                 <div class="lesson-item active" onclick="loadLesson(1)">
-                    <i class="fa-regular fa-circle-play"></i>
-                    <span>1.1 System Architecture</span>
-                </div>
-                
-                <div class="lesson-item" onclick="loadLesson(2)">
-                    <i class="fa-solid fa-lock" style="color: gray;"></i>
-                    <span style="color: gray;">1.2 Microcontrollers (Locked)</span>
-                </div>
-                
-                <div class="lesson-item" onclick="loadLesson(3)">
-                    <i class="fa-solid fa-lock" style="color: gray;"></i>
-                    <span style="color: gray;">1.3 Sensor Integration (Locked)</span>
+                    <i class="fa-regular fa-circle-play"></i> <span>1.1 System Architecture</span>
                 </div>
             </div>
         </aside>
 
         <main class="content-viewer">
-            
             <div class="video-frame glass-panel">
                 <div class="video-placeholder">
                     <i class="fa-solid fa-play" style="font-size: 3rem; color: var(--neon-cyan);"></i>
@@ -51,32 +37,54 @@
 
             <div class="lesson-content glass-panel">
                 <h1 id="lesson-title">1.1 System Architecture</h1>
-                <p id="lesson-desc" style="color: rgba(255,255,255,0.7); line-height: 1.6;">
+                <p style="color: rgba(255,255,255,0.7); line-height: 1.6;">
                     Welcome to the foundation of robotics. In this module, we explore the interaction between 
                     Mechanical Structure, Electronics (Nervous System), and Software (Brain).
                 </p>
-
-                <div class="resources-box">
-                    <h4><i class="fa-solid fa-download"></i> RESOURCES</h4>
-                    <a href="#" class="resource-link">Download PDF Schematic</a>
-                    <a href="#" class="resource-link">Source Code (GitHub)</a>
-                </div>
-
-                <button class="btn-primary" style="margin-top: 2rem;">COMPLETE MODULE</button>
+                <button class="btn-primary" onclick="completeModule()" style="margin-top: 2rem;">COMPLETE MODULE</button>
             </div>
-
         </main>
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
     <script src="firebase-config.js"></script>
+
     <script>
-        // SIMPLE LESSON SWITCHER (DEMO)
-        function loadLesson(id) {
-            if(id === 1) {
-                document.getElementById('lesson-title').innerText = "1.1 System Architecture";
-                document.querySelector('.video-placeholder').innerHTML = '<i class="fa-solid fa-play" style="font-size: 3rem; color: var(--neon-cyan);"></i><p>VIDEO FEED OFFLINE (DEMO MODE)</p>';
+        // Start Services
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        function completeModule() {
+            const user = auth.currentUser;
+            
+            if (user) {
+                const userRef = db.collection('users').doc(user.uid);
+
+                userRef.get().then((doc) => {
+                    if (doc.exists) {
+                        userRef.update({
+                            points: firebase.firestore.FieldValue.increment(100),
+                            modules_completed: firebase.firestore.FieldValue.increment(1)
+                        }).then(() => {
+                            alert("MODULE COMPLETE! +100 INNOVATION POINTS AWARDED.");
+                            window.location.href = "dashboard.html";
+                        });
+                    } else {
+                        userRef.set({
+                            email: user.email,
+                            points: 100,
+                            modules_completed: 1,
+                            rank: "Explorer"
+                        }).then(() => {
+                            alert("FIRST MISSION COMPLETE! +100 POINTS.");
+                            window.location.href = "dashboard.html";
+                        });
+                    }
+                });
             } else {
-                alert("ACCESS DENIED: LEVEL TOO LOW. EARN POINTS TO UNLOCK.");
+                alert("ERROR: YOU MUST BE LOGGED IN.");
             }
         }
     </script>

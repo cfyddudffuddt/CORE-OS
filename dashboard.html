@@ -7,7 +7,6 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -20,17 +19,14 @@
     </nav>
 
     <div class="dashboard-container">
-        
         <aside class="sidebar">
             <a href="#" class="active"><i class="fa-solid fa-chart-line"></i> OVERVIEW</a>
-           <a href="learning.html"><i class="fa-solid fa-graduation-cap"></i> LEARNING HUB</a>
+            <a href="learning.html"><i class="fa-solid fa-graduation-cap"></i> LEARNING HUB</a>
             <a href="#"><i class="fa-solid fa-microchip"></i> PROJECT LAB</a>
             <a href="#"><i class="fa-solid fa-trophy"></i> LEADERBOARD</a>
-            <a href="#"><i class="fa-solid fa-gear"></i> SETTINGS</a>
         </aside>
 
         <main class="main-content">
-            
             <div class="welcome-banner">
                 <span class="user-rank">CURRENT RANK: EXPLORER</span>
                 <h1 id="user-greeting">WELCOME BACK, PILOT</h1>
@@ -43,11 +39,11 @@
                     <span class="stat-label">PROJECTS BUILT</span>
                 </div>
                 <div class="stat-card">
-                    <span class="stat-number" style="color: var(--neon-blue);">0</span>
+                    <span class="stat-number" id="points-display" style="color: var(--neon-blue);">0</span>
                     <span class="stat-label">INNOVATION POINTS</span>
                 </div>
                 <div class="stat-card">
-                    <span class="stat-number" style="color: gold;">1</span>
+                    <span class="stat-number" id="modules-display" style="color: gold;">0</span>
                     <span class="stat-label">MODULES ACTIVE</span>
                 </div>
             </div>
@@ -60,37 +56,49 @@
             <div class="card glass-panel" style="display: flex; justify-content: space-between; align-items: center;">
                 <div>
                     <h3 style="color: var(--neon-cyan); margin-bottom: 0.5rem;">MISSION 1: SYSTEM INITIALIZATION</h3>
-                    <p>Complete your profile configuration to unlock the Learning Hub.</p>
+                    <p>Access the Learning Hub to begin your training.</p>
                 </div>
-                <button class="btn-primary">BEGIN</button>
+                <button class="btn-primary" onclick="window.location.href='learning.html'">BEGIN</button>
             </div>
-
         </main>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
     
     <script src="firebase-config.js"></script>
 
     <script>
-        // SECURITY CHECK: Kick user out if not logged in
+        // Start Services
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Check Login Status
         auth.onAuthStateChanged(user => {
             if (user) {
                 console.log("AUTHORIZED: " + user.email);
-                // Update the Greeting with their Email
                 document.getElementById('user-greeting').innerText = "WELCOME BACK, " + user.email.split('@')[0].toUpperCase();
+
+                // Get Data from Database
+                db.collection('users').doc(user.uid).get().then((doc) => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        document.getElementById('points-display').innerText = data.points || 0;
+                        document.getElementById('modules-display').innerText = data.modules_completed || 0;
+                        document.querySelector('.user-rank').innerText = "CURRENT RANK: " + (data.rank || "EXPLORER");
+                    }
+                });
             } else {
-                console.log("UNAUTHORIZED ACCESS DETECTED");
+                // If not logged in, go back to home
                 window.location.href = "index.html";
             }
         });
 
-        // LOGOUT FUNCTION
         function logout() {
-            auth.signOut().then(() => {
-                window.location.href = "index.html";
-            });
+            auth.signOut().then(() => { window.location.href = "index.html"; });
         }
     </script>
 </body>
