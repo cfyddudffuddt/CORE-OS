@@ -1,0 +1,21 @@
+{
+  "name": "C.O.R.E Robotics System",
+  "short_name": "CORE OS",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#050505",
+  "theme_color": "#00F3FF",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/4712/4712035.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/4712/4712035.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
