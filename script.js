@@ -28,3 +28,25 @@ window.onload = typeWriter;
 
 // CONSOLE WELCOME MESSAGE (For developers checking Inspect Element)
 console.log("%c C.O.R.E SYSTEM ONLINE ", "color: #00F3FF; background: #050505; font-size: 20px; padding: 10px; border: 2px solid #00F3FF;");
+
+// MODAL LOGIC
+const modal = document.getElementById('login-modal');
+const loginBtn = document.querySelector('.btn-login');
+
+// Open Modal
+loginBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    modal.style.display = 'flex';
+});
+
+// Close Modal Function
+function closeLogin() {
+    modal.style.display = 'none';
+}
+
+// Close if clicking outside the box
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}

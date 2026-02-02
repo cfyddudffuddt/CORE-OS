@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>CORE | DASHBOARD</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
+</head>
+<body style="display: flex; justify-content: center; align-items: center; height: 100vh; flex-direction: column;">
+    
+    <h1 style="font-family: 'Orbitron'; color: #00F3FF; font-size: 3rem;">ACCESS GRANTED</h1>
+    <p style="color: white;">WELCOME TO THE NEURAL NETWORK</p>
+    <br>
+    <button onclick="logout()" class="btn-secondary">DISCONNECT</button>
+
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    
+    <script>
+        // LOGOUT FUNCTION
+        function logout() {
+            firebase.auth().signOut().then(() => {
+                window.location.href = "index.html";
+            });
+        }
+    </script>
+</body>
+</html>
