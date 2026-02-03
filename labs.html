@@ -119,6 +119,12 @@
 
             <div class="cat-header">ENGINEERING SUITE</div>
             <div class="tools-grid">
+                <div class="tool-card" onclick="loadSim('circuitlab')">
+                    <i class="fa-solid fa-wave-square card-icon" style="color: #ff4500;"></i>
+                    <h4 class="card-title">CIRCUITLAB</h4>
+                    <span class="card-sub">Analog/Digital Sim</span>
+                </div>
+
                 <div class="tool-card" onclick="loadSim('plc')">
                     <i class="fa-solid fa-industry card-icon" style="color: #ff9900;"></i>
                     <h4 class="card-title">PLC LOGIC</h4>
@@ -204,6 +210,10 @@
                     break;
 
                 // EXTERNAL TOOLS (Heavy Apps)
+                case 'circuitlab':
+                    // Using the clean editor link for a fresh workspace
+                    showOverlay("CIRCUITLAB", "https://www.circuitlab.com/editor/");
+                    break;
                 case 'plc':
                     showOverlay("PLC FIDDLE", "https://www.plcfiddle.com/");
                     break;
