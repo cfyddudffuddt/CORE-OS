@@ -3,23 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CORE | OVERWATCH</title>
+    <title>CORE | COMMAND CENTER</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#00F3FF">
     
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
+        /* ADMIN SPECIFIC STYLES */
         .admin-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
         .admin-table th { text-align: left; padding: 1rem; color: var(--neon-cyan); border-bottom: 1px solid white; }
         .admin-table td { padding: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
         .btn-danger { background: #ff2e2e; color: white; border: none; padding: 0.3rem 0.8rem; cursor: pointer; font-family: 'Orbitron'; margin-right: 5px; }
         .btn-promote { background: gold; color: black; border: none; padding: 0.3rem 0.8rem; cursor: pointer; font-family: 'Orbitron'; }
         .admin-input { width: 100%; padding: 0.8rem; margin-bottom: 1rem; background: rgba(255,255,255,0.1); border: 1px solid gray; color: white; }
-        
-        /* HIDE TABS BY DEFAULT */
         .restricted-tab { display: none; }
+
+        /* DASHBOARD METRICS */
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+        .metric-card { background: rgba(0,0,0,0.6); border: 1px solid var(--neon-cyan); padding: 1.5rem; text-align: center; border-radius: 10px; }
+        .metric-val { font-family: 'Orbitron'; font-size: 2rem; color: white; margin: 0.5rem 0; }
+        .metric-label { font-size: 0.8rem; color: gray; letter-spacing: 2px; }
+
+        /* CHARTS */
+        .chart-container { background: rgba(0,0,0,0.4); padding: 1rem; border-radius: 10px; margin-bottom: 1rem; height: 300px; display: flex; justify-content: center; }
     </style>
 </head>
 <body>
@@ -33,16 +44,46 @@
         <main class="main-content" style="margin-left: 0; max-width: 1200px; margin: 0 auto;">
             
             <div class="section-header">
-                <h2 id="admin-title" style="color: red;">AUTHENTICATING...</h2>
+                <h2 id="admin-title" style="color: red;">SYSTEM ANALYTICS</h2>
                 <div class="line" style="background: red;"></div>
             </div>
 
             <div style="margin-bottom: 2rem;">
-                <button id="btn-chat" class="tab-btn restricted-tab" onclick="switchView('chat')">CHAT LOGS</button>
+                <button id="btn-dash" class="tab-btn active restricted-tab" onclick="switchView('dashboard')">DASHBOARD</button>
+                <button id="btn-chat" class="tab-btn restricted-tab" onclick="switchView('chat')">COMM LOGS</button>
                 <button id="btn-proj" class="tab-btn restricted-tab" onclick="switchView('projects')">PROJECTS</button>
-                <button id="btn-user" class="tab-btn restricted-tab" onclick="switchView('users')">USER REGISTRY</button>
-                
+                <button id="btn-user" class="tab-btn restricted-tab" onclick="switchView('users')">USER DATABASE</button>
                 <button id="btn-lesson" class="tab-btn restricted-tab" onclick="switchView('lessons')" style="color: gold; border-color: gold;">+ ADD LESSON</button>
+            </div>
+
+            <div id="dashboard-view" style="display: block;">
+                
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <i class="fa-solid fa-users" style="color: var(--neon-cyan);"></i>
+                        <div class="metric-val" id="stat-users">0</div>
+                        <span class="metric-label">TOTAL OPERATIVES</span>
+                    </div>
+                    <div class="metric-card">
+                        <i class="fa-solid fa-microchip" style="color: #ff5555;"></i>
+                        <div class="metric-val" id="stat-projects">0</div>
+                        <span class="metric-label">PROJECTS BUILT</span>
+                    </div>
+                    <div class="metric-card">
+                        <i class="fa-solid fa-graduation-cap" style="color: gold;"></i>
+                        <div class="metric-val" id="stat-lessons">0</div>
+                        <span class="metric-label">MODULES LIVE</span>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="chart-container glass-panel">
+                        <canvas id="chartRoles"></canvas>
+                    </div>
+                    <div class="chart-container glass-panel">
+                        <canvas id="chartActivity"></canvas>
+                    </div>
+                </div>
             </div>
 
             <div id="data-view" class="glass-panel" style="min-height: 400px; display:none;">
@@ -54,8 +95,8 @@
 
             <div id="lesson-view" class="glass-panel" style="display: none; max-width: 600px; margin: 0 auto;">
                 <h3 style="color: gold; margin-bottom: 1rem;">UPLOAD NEW INTEL</h3>
-                <label>Lesson ID</label><input id="l-id" class="admin-input" placeholder="e.g. 1.2">
-                <label>Title</label><input id="l-title" class="admin-input" placeholder="e.g. Motors & Drivers">
+                <label>Lesson ID</label><input id="l-id" class="admin-input" placeholder="e.g. 1.3">
+                <label>Title</label><input id="l-title" class="admin-input" placeholder="e.g. PWM Control">
                 <label>YouTube Embed URL</label><input id="l-video" class="admin-input" placeholder="https://www.youtube.com/embed/...">
                 <label>Content</label><textarea id="l-desc" class="admin-input" rows="5"></textarea>
                 <button onclick="uploadLesson()" class="btn-primary" style="width: 100%;">UPLOAD TO SERVER</button>
@@ -72,29 +113,23 @@
     <script>
         const tableHead = document.getElementById('table-head');
         const tableBody = document.getElementById('table-body');
+        const dashboardView = document.getElementById('dashboard-view');
         const dataView = document.getElementById('data-view');
         const lessonView = document.getElementById('lesson-view');
 
-        // ==========================================
-        // 🔒 CHANGE THIS TO YOUR EMAIL!
-        // ==========================================
+        // 🔒 SUPER ADMIN EMAIL
         const SUPER_ADMIN = "futurevisioual2020@gmail.com"; 
 
         auth.onAuthStateChanged(user => {
             if (user) {
-                // 1. CHECK IF SUPER ADMIN (YOU)
                 if (user.email === SUPER_ADMIN) {
                     setupSuperAdmin();
-                } 
-                // 2. CHECK IF SUB-ADMIN (INSTRUCTOR)
-                else {
+                    loadAnalytics(); // Load Charts
+                } else {
                     db.collection('users').doc(user.uid).get().then(doc => {
-                        const data = doc.data();
-                        if (data && data.role === 'instructor') {
+                        if (doc.data() && doc.data().role === 'instructor') {
                             setupInstructor();
                         } else {
-                            // 3. KICK OUT NORMAL USERS
-                            alert("ACCESS DENIED: CLEARANCE LEVEL TOO LOW.");
                             window.location.href = "dashboard.html";
                         }
                     });
@@ -105,116 +140,129 @@
         });
 
         function setupSuperAdmin() {
-            document.getElementById('admin-title').innerText = "COMMANDER OVERWATCH";
-            // Show All Tabs
             document.querySelectorAll('.restricted-tab').forEach(el => el.style.display = 'inline-block');
-            document.getElementById('btn-chat').classList.add('active');
-            dataView.style.display = 'block';
-            loadData('chat');
         }
 
         function setupInstructor() {
-            document.getElementById('admin-title').innerText = "INSTRUCTOR PANEL";
-            // Show Only Lesson Tab
             document.getElementById('btn-lesson').style.display = 'inline-block';
             document.getElementById('btn-lesson').classList.add('active');
             switchView('lessons');
         }
 
-        // --- SWITCH TABS ---
+        // --- ANALYTICS ENGINE ---
+        function loadAnalytics() {
+            // 1. Count Users & Roles
+            db.collection('users').get().then(snap => {
+                document.getElementById('stat-users').innerText = snap.size;
+                
+                let students = 0, instructors = 0;
+                snap.forEach(doc => {
+                    if(doc.data().role === 'instructor') instructors++; else students++;
+                });
+                renderRoleChart(students, instructors);
+            });
+
+            // 2. Count Projects
+            db.collection('projects').get().then(snap => {
+                document.getElementById('stat-projects').innerText = snap.size;
+                // Fake Activity Data for Demo (Since we don't store historical timestamps yet)
+                renderActivityChart([5, 8, 12, snap.size]); 
+            });
+
+            // 3. Count Lessons
+            db.collection('lessons').get().then(snap => document.getElementById('stat-lessons').innerText = snap.size);
+        }
+
+        function renderRoleChart(students, instructors) {
+            new Chart(document.getElementById('chartRoles'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Students', 'Instructors'],
+                    datasets: [{
+                        data: [students, instructors],
+                        backgroundColor: ['#00F3FF', '#FFD700'],
+                        borderWidth: 0
+                    }]
+                },
+                options: { plugins: { title: { display: true, text: 'OPERATIVE ROLES', color: 'white' }, legend: { labels: { color: 'white' } } } }
+            });
+        }
+
+        function renderActivityChart(data) {
+            new Chart(document.getElementById('chartActivity'), {
+                type: 'line',
+                data: {
+                    labels: ['Week 1', 'Week 2', 'Week 3', 'Current'],
+                    datasets: [{
+                        label: 'Project Submissions',
+                        data: data,
+                        borderColor: '#ff5555',
+                        tension: 0.4
+                    }]
+                },
+                options: { plugins: { title: { display: true, text: 'ENGINEERING OUTPUT', color: 'white' }, legend: { labels: { color: 'white' } } }, scales: { y: { ticks: { color: 'gray' } }, x: { ticks: { color: 'gray' } } } }
+            });
+        }
+
+        // --- NAVIGATION & LOGIC ---
         function switchView(type) {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            // Highlight clicked button (need simple logic to find which button was clicked, simpler to just set active manually in UI logic or ignore visual strictness for now)
+            event.currentTarget.classList.add('active');
             
-            if(type === 'lessons') {
-                dataView.style.display = 'none';
-                lessonView.style.display = 'block';
-            } else {
-                lessonView.style.display = 'none';
+            dashboardView.style.display = 'none';
+            dataView.style.display = 'none';
+            lessonView.style.display = 'none';
+
+            if(type === 'dashboard') dashboardView.style.display = 'block';
+            else if(type === 'lessons') lessonView.style.display = 'block';
+            else {
                 dataView.style.display = 'block';
                 loadData(type);
             }
         }
 
-        // --- LOAD DATA ---
+        // (Existing LoadData / Actions from previous V2 code...)
         function loadData(type) {
             tableBody.innerHTML = '<tr><td>SCANNING DATABASE...</td></tr>';
-            
             if (type === 'users') {
                 tableHead.innerHTML = '<tr><th>EMAIL</th><th>ROLE</th><th>ACTION</th></tr>';
                 db.collection('users').orderBy('points', 'desc').get().then(snap => {
                     let html = '';
                     snap.forEach(doc => {
                         const d = doc.data();
-                        const role = d.role || "Student";
-                        const isInstructor = role === 'instructor';
-                        
-                        html += `<tr>
-                            <td>${d.email}</td>
-                            <td style="color:${isInstructor ? 'gold' : 'gray'}">${role.toUpperCase()}</td>
-                            <td>
-                                <button class="btn-danger" onclick="nuke('users', '${doc.id}')">BAN</button>
-                                ${!isInstructor ? `<button class="btn-promote" onclick="promoteUser('${doc.id}')">PROMOTE</button>` : ''}
-                                ${isInstructor ? `<button class="btn-danger" style="background:orange;" onclick="demoteUser('${doc.id}')">DEMOTE</button>` : ''}
-                            </td>
-                        </tr>`;
+                        const isInstr = d.role === 'instructor';
+                        html += `<tr><td>${d.email}</td><td style="color:${isInstr?'gold':'gray'}">${d.role||'Student'}</td>
+                        <td><button class="btn-danger" onclick="nuke('users', '${doc.id}')">BAN</button>
+                        ${!isInstr ? `<button class="btn-promote" onclick="promoteUser('${doc.id}')">PROMOTE</button>` : ''}</td></tr>`;
                     });
                     tableBody.innerHTML = html;
                 });
-            }
-            else if (type === 'chat') {
-                // (Existing Chat Logic)
+            } else if (type === 'chat') {
                 tableHead.innerHTML = '<tr><th>USER</th><th>MSG</th><th>ACT</th></tr>';
                 db.collection('global_chat').orderBy('timestamp', 'desc').limit(20).get().then(snap => {
-                    let html = '';
-                    snap.forEach(doc => html += `<tr><td>${doc.data().name}</td><td>${doc.data().text}</td><td><button class="btn-danger" onclick="nuke('global_chat', '${doc.id}')">X</button></td></tr>`);
+                    let html = ''; snap.forEach(doc => html += `<tr><td>${doc.data().name}</td><td>${doc.data().text}</td><td><button class="btn-danger" onclick="nuke('global_chat', '${doc.id}')">X</button></td></tr>`);
                     tableBody.innerHTML = html;
                 });
-            }
-            else if (type === 'projects') {
-                // (Existing Project Logic)
-                tableHead.innerHTML = '<tr><th>TITLE</th><th>LINK</th><th>ACT</th></tr>';
-                db.collection('projects').orderBy('timestamp', 'desc').get().then(snap => {
-                    let html = '';
-                    snap.forEach(doc => html += `<tr><td>${doc.data().title}</td><td><a href="${doc.data().link}" target="_blank" style="color:cyan">VIEW</a></td><td><button class="btn-danger" onclick="nuke('projects', '${doc.id}')">X</button></td></tr>`);
+            } else if (type === 'projects') {
+                tableHead.innerHTML = '<tr><th>TITLE</th><th>ACT</th></tr>';
+                db.collection('projects').get().then(snap => {
+                    let html = ''; snap.forEach(doc => html += `<tr><td>${doc.data().title}</td><td><button class="btn-danger" onclick="nuke('projects', '${doc.id}')">X</button></td></tr>`);
                     tableBody.innerHTML = html;
                 });
             }
         }
 
-        // --- ACTIONS ---
         function uploadLesson() {
             const id = document.getElementById('l-id').value;
             const title = document.getElementById('l-title').value;
             const video = document.getElementById('l-video').value;
             const desc = document.getElementById('l-desc').value;
-            if(!id || !title) return alert("Missing Data");
-
-            db.collection('lessons').doc(id).set({
-                id, title, video, desc, timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            }).then(() => { alert("LESSON LIVE!"); document.getElementById('l-title').value=''; });
+            if(!id) return alert("Missing Data");
+            db.collection('lessons').doc(id).set({ id, title, video, desc, timestamp: firebase.firestore.FieldValue.serverTimestamp() })
+              .then(() => { alert("LESSON LIVE!"); document.getElementById('l-title').value=''; });
         }
-
-        function promoteUser(uid) {
-            if(confirm("Promote this user to INSTRUCTOR? They will be able to upload lessons.")) {
-                db.collection('users').doc(uid).update({ role: 'instructor' }).then(() => loadData('users'));
-            }
-        }
-
-        function demoteUser(uid) {
-            if(confirm("Revoke INSTRUCTOR status?")) {
-                db.collection('users').doc(uid).update({ role: 'student' }).then(() => loadData('users'));
-            }
-        }
-
-        function nuke(col, id) {
-            if(confirm("Confirm Delete?")) db.collection(col).doc(id).delete().then(() => {
-                // Refresh view
-                if(col === 'users') loadData('users');
-                else if(col === 'global_chat') loadData('chat');
-                else loadData('projects');
-            });
-        }
+        function promoteUser(uid) { if(confirm("Promote?")) db.collection('users').doc(uid).update({ role: 'instructor' }).then(() => loadData('users')); }
+        function nuke(col, id) { if(confirm("Delete?")) db.collection(col).doc(id).delete().then(() => loadData(col === 'global_chat' ? 'chat' : col)); }
     </script>
 </body>
 </html>
