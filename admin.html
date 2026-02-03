@@ -10,11 +10,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
-
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
-        /* ADMIN SPECIFIC STYLES */
         .admin-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
         .admin-table th { text-align: left; padding: 1rem; color: var(--neon-cyan); border-bottom: 1px solid white; }
         .admin-table td { padding: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
@@ -22,14 +20,12 @@
         .btn-promote { background: gold; color: black; border: none; padding: 0.3rem 0.8rem; cursor: pointer; font-family: 'Orbitron'; }
         .admin-input { width: 100%; padding: 0.8rem; margin-bottom: 1rem; background: rgba(255,255,255,0.1); border: 1px solid gray; color: white; }
         .restricted-tab { display: none; }
-
+        
         /* DASHBOARD METRICS */
         .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
         .metric-card { background: rgba(0,0,0,0.6); border: 1px solid var(--neon-cyan); padding: 1.5rem; text-align: center; border-radius: 10px; }
         .metric-val { font-family: 'Orbitron'; font-size: 2rem; color: white; margin: 0.5rem 0; }
         .metric-label { font-size: 0.8rem; color: gray; letter-spacing: 2px; }
-
-        /* CHARTS */
         .chart-container { background: rgba(0,0,0,0.4); padding: 1rem; border-radius: 10px; margin-bottom: 1rem; height: 300px; display: flex; justify-content: center; }
     </style>
 </head>
@@ -50,39 +46,22 @@
 
             <div style="margin-bottom: 2rem;">
                 <button id="btn-dash" class="tab-btn active restricted-tab" onclick="switchView('dashboard')">DASHBOARD</button>
-                <button id="btn-chat" class="tab-btn restricted-tab" onclick="switchView('chat')">COMM LOGS</button>
+                <button id="btn-chat" class="tab-btn restricted-tab" onclick="switchView('chat')">LOGS</button>
                 <button id="btn-proj" class="tab-btn restricted-tab" onclick="switchView('projects')">PROJECTS</button>
-                <button id="btn-user" class="tab-btn restricted-tab" onclick="switchView('users')">USER DATABASE</button>
+                <button id="btn-user" class="tab-btn restricted-tab" onclick="switchView('users')">USERS</button>
+                <button id="btn-lib" class="tab-btn restricted-tab" onclick="switchView('library')">LIBRARY</button>
                 <button id="btn-lesson" class="tab-btn restricted-tab" onclick="switchView('lessons')" style="color: gold; border-color: gold;">+ ADD LESSON</button>
             </div>
 
-            <div id="dashboard-view" style="display: block;">
-                
+            <div id="dashboard-view">
                 <div class="metrics-grid">
-                    <div class="metric-card">
-                        <i class="fa-solid fa-users" style="color: var(--neon-cyan);"></i>
-                        <div class="metric-val" id="stat-users">0</div>
-                        <span class="metric-label">TOTAL OPERATIVES</span>
-                    </div>
-                    <div class="metric-card">
-                        <i class="fa-solid fa-microchip" style="color: #ff5555;"></i>
-                        <div class="metric-val" id="stat-projects">0</div>
-                        <span class="metric-label">PROJECTS BUILT</span>
-                    </div>
-                    <div class="metric-card">
-                        <i class="fa-solid fa-graduation-cap" style="color: gold;"></i>
-                        <div class="metric-val" id="stat-lessons">0</div>
-                        <span class="metric-label">MODULES LIVE</span>
-                    </div>
+                    <div class="metric-card"><i class="fa-solid fa-users" style="color: var(--neon-cyan);"></i><div class="metric-val" id="stat-users">0</div><span class="metric-label">OPERATIVES</span></div>
+                    <div class="metric-card"><i class="fa-solid fa-microchip" style="color: #ff5555;"></i><div class="metric-val" id="stat-projects">0</div><span class="metric-label">PROJECTS</span></div>
+                    <div class="metric-card"><i class="fa-solid fa-book" style="color: gold;"></i><div class="metric-val" id="stat-books">0</div><span class="metric-label">ARCHIVES</span></div>
                 </div>
-
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                    <div class="chart-container glass-panel">
-                        <canvas id="chartRoles"></canvas>
-                    </div>
-                    <div class="chart-container glass-panel">
-                        <canvas id="chartActivity"></canvas>
-                    </div>
+                    <div class="chart-container glass-panel"><canvas id="chartRoles"></canvas></div>
+                    <div class="chart-container glass-panel"><canvas id="chartActivity"></canvas></div>
                 </div>
             </div>
 
@@ -94,12 +73,24 @@
             </div>
 
             <div id="lesson-view" class="glass-panel" style="display: none; max-width: 600px; margin: 0 auto;">
-                <h3 style="color: gold; margin-bottom: 1rem;">UPLOAD NEW INTEL</h3>
-                <label>Lesson ID</label><input id="l-id" class="admin-input" placeholder="e.g. 1.3">
-                <label>Title</label><input id="l-title" class="admin-input" placeholder="e.g. PWM Control">
-                <label>YouTube Embed URL</label><input id="l-video" class="admin-input" placeholder="https://www.youtube.com/embed/...">
-                <label>Content</label><textarea id="l-desc" class="admin-input" rows="5"></textarea>
-                <button onclick="uploadLesson()" class="btn-primary" style="width: 100%;">UPLOAD TO SERVER</button>
+                <h3 style="color: gold; margin-bottom: 1rem;">UPLOAD NEW LESSON</h3>
+                <input id="l-id" class="admin-input" placeholder="ID (e.g. 1.3)">
+                <input id="l-title" class="admin-input" placeholder="Title">
+                <input id="l-video" class="admin-input" placeholder="YouTube Embed URL">
+                <textarea id="l-desc" class="admin-input" rows="5" placeholder="Description"></textarea>
+                <button onclick="uploadLesson()" class="btn-primary" style="width: 100%;">UPLOAD</button>
+            </div>
+
+            <div id="library-view" class="glass-panel" style="display: none; max-width: 600px; margin: 0 auto;">
+                <h3 style="color: var(--neon-cyan); margin-bottom: 1rem;">UPLOAD TO ARCHIVES</h3>
+                <input id="b-title" class="admin-input" placeholder="Book Title">
+                <input id="b-author" class="admin-input" placeholder="Author Name">
+                <input id="b-link" class="admin-input" placeholder="PDF/Drive Link">
+                <input id="b-cover" class="admin-input" placeholder="Cover Image URL (Optional)">
+                <button onclick="uploadBook()" class="btn-primary" style="width: 100%; border-color: var(--neon-cyan); color: var(--neon-cyan);">ARCHIVE BOOK</button>
+                
+                <h4 style="margin-top: 2rem;">CURRENT ARCHIVES</h4>
+                <div id="book-list-admin" style="max-height: 200px; overflow-y: auto; font-size: 0.8rem; margin-top: 1rem;"></div>
             </div>
 
         </main>
@@ -111,100 +102,33 @@
     <script src="firebase-config.js"></script>
 
     <script>
-        const tableHead = document.getElementById('table-head');
-        const tableBody = document.getElementById('table-body');
         const dashboardView = document.getElementById('dashboard-view');
         const dataView = document.getElementById('data-view');
         const lessonView = document.getElementById('lesson-view');
+        const libraryView = document.getElementById('library-view');
+        const tableBody = document.getElementById('table-body');
+        const tableHead = document.getElementById('table-head');
 
         // 🔒 SUPER ADMIN EMAIL
         const SUPER_ADMIN = "futurevisioual2020@gmail.com"; 
 
         auth.onAuthStateChanged(user => {
-            if (user) {
-                if (user.email === SUPER_ADMIN) {
-                    setupSuperAdmin();
-                    loadAnalytics(); // Load Charts
-                } else {
-                    db.collection('users').doc(user.uid).get().then(doc => {
-                        if (doc.data() && doc.data().role === 'instructor') {
-                            setupInstructor();
-                        } else {
-                            window.location.href = "dashboard.html";
-                        }
-                    });
-                }
+            if (user && user.email === SUPER_ADMIN) {
+                setupSuperAdmin();
+                loadAnalytics();
+            } else if (user) {
+                db.collection('users').doc(user.uid).get().then(doc => {
+                    if (doc.data() && doc.data().role === 'instructor') setupInstructor();
+                    else window.location.href = "dashboard.html";
+                });
             } else {
                 window.location.href = "index.html";
             }
         });
 
-        function setupSuperAdmin() {
-            document.querySelectorAll('.restricted-tab').forEach(el => el.style.display = 'inline-block');
-        }
+        function setupSuperAdmin() { document.querySelectorAll('.restricted-tab').forEach(el => el.style.display = 'inline-block'); }
+        function setupInstructor() { document.getElementById('btn-lesson').style.display = 'inline-block'; switchView('lessons'); }
 
-        function setupInstructor() {
-            document.getElementById('btn-lesson').style.display = 'inline-block';
-            document.getElementById('btn-lesson').classList.add('active');
-            switchView('lessons');
-        }
-
-        // --- ANALYTICS ENGINE ---
-        function loadAnalytics() {
-            // 1. Count Users & Roles
-            db.collection('users').get().then(snap => {
-                document.getElementById('stat-users').innerText = snap.size;
-                
-                let students = 0, instructors = 0;
-                snap.forEach(doc => {
-                    if(doc.data().role === 'instructor') instructors++; else students++;
-                });
-                renderRoleChart(students, instructors);
-            });
-
-            // 2. Count Projects
-            db.collection('projects').get().then(snap => {
-                document.getElementById('stat-projects').innerText = snap.size;
-                // Fake Activity Data for Demo (Since we don't store historical timestamps yet)
-                renderActivityChart([5, 8, 12, snap.size]); 
-            });
-
-            // 3. Count Lessons
-            db.collection('lessons').get().then(snap => document.getElementById('stat-lessons').innerText = snap.size);
-        }
-
-        function renderRoleChart(students, instructors) {
-            new Chart(document.getElementById('chartRoles'), {
-                type: 'doughnut',
-                data: {
-                    labels: ['Students', 'Instructors'],
-                    datasets: [{
-                        data: [students, instructors],
-                        backgroundColor: ['#00F3FF', '#FFD700'],
-                        borderWidth: 0
-                    }]
-                },
-                options: { plugins: { title: { display: true, text: 'OPERATIVE ROLES', color: 'white' }, legend: { labels: { color: 'white' } } } }
-            });
-        }
-
-        function renderActivityChart(data) {
-            new Chart(document.getElementById('chartActivity'), {
-                type: 'line',
-                data: {
-                    labels: ['Week 1', 'Week 2', 'Week 3', 'Current'],
-                    datasets: [{
-                        label: 'Project Submissions',
-                        data: data,
-                        borderColor: '#ff5555',
-                        tension: 0.4
-                    }]
-                },
-                options: { plugins: { title: { display: true, text: 'ENGINEERING OUTPUT', color: 'white' }, legend: { labels: { color: 'white' } } }, scales: { y: { ticks: { color: 'gray' } }, x: { ticks: { color: 'gray' } } } }
-            });
-        }
-
-        // --- NAVIGATION & LOGIC ---
         function switchView(type) {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             event.currentTarget.classList.add('active');
@@ -212,57 +136,93 @@
             dashboardView.style.display = 'none';
             dataView.style.display = 'none';
             lessonView.style.display = 'none';
+            libraryView.style.display = 'none';
 
             if(type === 'dashboard') dashboardView.style.display = 'block';
             else if(type === 'lessons') lessonView.style.display = 'block';
-            else {
+            else if(type === 'library') {
+                libraryView.style.display = 'block';
+                loadAdminBooks();
+            } else {
                 dataView.style.display = 'block';
                 loadData(type);
             }
         }
 
-        // (Existing LoadData / Actions from previous V2 code...)
-        function loadData(type) {
-            tableBody.innerHTML = '<tr><td>SCANNING DATABASE...</td></tr>';
-            if (type === 'users') {
-                tableHead.innerHTML = '<tr><th>EMAIL</th><th>ROLE</th><th>ACTION</th></tr>';
-                db.collection('users').orderBy('points', 'desc').get().then(snap => {
-                    let html = '';
-                    snap.forEach(doc => {
-                        const d = doc.data();
-                        const isInstr = d.role === 'instructor';
-                        html += `<tr><td>${d.email}</td><td style="color:${isInstr?'gold':'gray'}">${d.role||'Student'}</td>
-                        <td><button class="btn-danger" onclick="nuke('users', '${doc.id}')">BAN</button>
-                        ${!isInstr ? `<button class="btn-promote" onclick="promoteUser('${doc.id}')">PROMOTE</button>` : ''}</td></tr>`;
-                    });
-                    tableBody.innerHTML = html;
-                });
-            } else if (type === 'chat') {
-                tableHead.innerHTML = '<tr><th>USER</th><th>MSG</th><th>ACT</th></tr>';
-                db.collection('global_chat').orderBy('timestamp', 'desc').limit(20).get().then(snap => {
-                    let html = ''; snap.forEach(doc => html += `<tr><td>${doc.data().name}</td><td>${doc.data().text}</td><td><button class="btn-danger" onclick="nuke('global_chat', '${doc.id}')">X</button></td></tr>`);
-                    tableBody.innerHTML = html;
-                });
-            } else if (type === 'projects') {
-                tableHead.innerHTML = '<tr><th>TITLE</th><th>ACT</th></tr>';
-                db.collection('projects').get().then(snap => {
-                    let html = ''; snap.forEach(doc => html += `<tr><td>${doc.data().title}</td><td><button class="btn-danger" onclick="nuke('projects', '${doc.id}')">X</button></td></tr>`);
-                    tableBody.innerHTML = html;
-                });
-            }
+        // --- ANALYTICS ---
+        function loadAnalytics() {
+            db.collection('users').get().then(s => {
+                document.getElementById('stat-users').innerText = s.size;
+                let stu=0, ins=0; s.forEach(d => d.data().role==='instructor'?ins++:stu++);
+                new Chart(document.getElementById('chartRoles'), {type:'doughnut',data:{labels:['Students','Instructors'],datasets:[{data:[stu,ins],backgroundColor:['#00F3FF','#FFD700'],borderWidth:0}]},options:{plugins:{legend:{labels:{color:'white'}}}}});
+            });
+            db.collection('projects').get().then(s => {
+                document.getElementById('stat-projects').innerText = s.size;
+                new Chart(document.getElementById('chartActivity'), {type:'line',data:{labels:['W1','W2','W3','Now'],datasets:[{label:'Projects',data:[2,5,8,s.size],borderColor:'#ff5555'}]},options:{scales:{y:{ticks:{color:'gray'}},x:{ticks:{color:'gray'}}},plugins:{legend:{labels:{color:'white'}}}}});
+            });
+            db.collection('books').get().then(s => document.getElementById('stat-books').innerText = s.size);
         }
 
+        // --- DATA LOADERS ---
+        function loadData(type) {
+            tableBody.innerHTML = '<tr><td>LOADING...</td></tr>';
+            let ref;
+            if(type === 'users') ref = db.collection('users').orderBy('points', 'desc');
+            else if(type === 'chat') ref = db.collection('global_chat').orderBy('timestamp', 'desc').limit(20);
+            else if(type === 'projects') ref = db.collection('projects');
+            
+            ref.get().then(snap => {
+                let html = '';
+                if(type === 'users') {
+                    tableHead.innerHTML = '<tr><th>EMAIL</th><th>ROLE</th><th>ACT</th></tr>';
+                    snap.forEach(doc => html += `<tr><td>${doc.data().email}</td><td>${doc.data().role||'Student'}</td><td><button class="btn-danger" onclick="nuke('users','${doc.id}')">BAN</button><button class="btn-promote" onclick="promoteUser('${doc.id}')">PROMOTE</button></td></tr>`);
+                } else if(type === 'chat') {
+                    tableHead.innerHTML = '<tr><th>MSG</th><th>ACT</th></tr>';
+                    snap.forEach(doc => html += `<tr><td>${doc.data().text}</td><td><button class="btn-danger" onclick="nuke('global_chat','${doc.id}')">X</button></td></tr>`);
+                } else {
+                    tableHead.innerHTML = '<tr><th>PROJECT</th><th>ACT</th></tr>';
+                    snap.forEach(doc => html += `<tr><td>${doc.data().title}</td><td><button class="btn-danger" onclick="nuke('projects','${doc.id}')">X</button></td></tr>`);
+                }
+                tableBody.innerHTML = html;
+            });
+        }
+
+        // --- LIBRARY LOGIC ---
+        function uploadBook() {
+            const title = document.getElementById('b-title').value;
+            const author = document.getElementById('b-author').value;
+            const link = document.getElementById('b-link').value;
+            const cover = document.getElementById('b-cover').value;
+            if(!title || !link) return alert("Title and Link Required");
+
+            db.collection('books').add({
+                title, author, link, cover, timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => { alert("BOOK ARCHIVED"); loadAdminBooks(); });
+        }
+
+        function loadAdminBooks() {
+            const list = document.getElementById('book-list-admin');
+            db.collection('books').orderBy('timestamp', 'desc').get().then(snap => {
+                let html = '';
+                snap.forEach(doc => {
+                    const d = doc.data();
+                    html += `<div style="display:flex; justify-content:space-between; border-bottom:1px solid gray; padding:5px;">
+                        <span>${d.title}</span> <button class="btn-danger" onclick="nuke('books','${doc.id}')">X</button>
+                    </div>`;
+                });
+                list.innerHTML = html;
+            });
+        }
+
+        // --- ACTIONS ---
         function uploadLesson() {
             const id = document.getElementById('l-id').value;
-            const title = document.getElementById('l-title').value;
-            const video = document.getElementById('l-video').value;
-            const desc = document.getElementById('l-desc').value;
-            if(!id) return alert("Missing Data");
-            db.collection('lessons').doc(id).set({ id, title, video, desc, timestamp: firebase.firestore.FieldValue.serverTimestamp() })
-              .then(() => { alert("LESSON LIVE!"); document.getElementById('l-title').value=''; });
+            db.collection('lessons').doc(id).set({
+                id, title: document.getElementById('l-title').value, video: document.getElementById('l-video').value, desc: document.getElementById('l-desc').value
+            }).then(()=>alert("LESSON LIVE"));
         }
-        function promoteUser(uid) { if(confirm("Promote?")) db.collection('users').doc(uid).update({ role: 'instructor' }).then(() => loadData('users')); }
-        function nuke(col, id) { if(confirm("Delete?")) db.collection(col).doc(id).delete().then(() => loadData(col === 'global_chat' ? 'chat' : col)); }
+        function promoteUser(uid) { if(confirm("Promote?")) db.collection('users').doc(uid).update({role:'instructor'}).then(()=>loadData('users')); }
+        function nuke(col, id) { if(confirm("Delete?")) db.collection(col).doc(id).delete().then(() => { if(col==='books') loadAdminBooks(); else loadData(col==='global_chat'?'chat':col); }); }
     </script>
 </body>
 </html>
