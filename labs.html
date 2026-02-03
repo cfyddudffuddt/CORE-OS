@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CORE | VIRTUAL LABS</title>
+    <title>CORE | OMNI-LABS</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#00F3FF">
     
@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     <style>
+        /* FRAME */
         .lab-frame {
             width: 100%;
             height: 80vh; 
@@ -18,10 +19,19 @@
             border-radius: 10px;
             background: #000;
         }
+        
+        /* TOOL CARDS */
+        .tools-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); 
+            gap: 0.8rem; 
+            margin-bottom: 1rem; 
+        }
+        
         .tool-card {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255,255,255,0.1);
-            padding: 1rem;
+            padding: 0.8rem;
             cursor: pointer;
             text-align: center;
             transition: 0.3s;
@@ -29,13 +39,21 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 120px;
+            min-height: 100px;
+            border-radius: 8px;
         }
-        .tool-card:hover { border-color: gold; background: rgba(255, 215, 0, 0.1); transform: translateY(-5px); }
-        .tool-card.active { border-color: var(--neon-cyan); background: rgba(0, 243, 255, 0.1); box-shadow: 0 0 15px rgba(0, 243, 255, 0.2); }
+        .tool-card:hover { border-color: gold; background: rgba(255, 215, 0, 0.1); transform: translateY(-3px); }
+        .tool-card.active { border-color: var(--neon-cyan); background: rgba(0, 243, 255, 0.1); box-shadow: 0 0 10px rgba(0, 243, 255, 0.2); }
         
-        /* Grid for 5 items */
-        .tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.8rem; margin-bottom: 1rem; }
+        .card-icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
+        .card-title { font-size: 0.8rem; color: white; margin: 0; font-family: 'Space Grotesk'; }
+        .card-sub { font-size: 0.6rem; color: gray; margin-top: 2px; }
+
+        /* CATEGORY HEADERS */
+        .cat-header {
+            font-size: 0.8rem; color: var(--neon-cyan); margin: 1rem 0 0.5rem 0; text-transform: uppercase; letter-spacing: 1px;
+            border-bottom: 1px solid rgba(0, 243, 255, 0.3); padding-bottom: 5px;
+        }
     </style>
 </head>
 <body>
@@ -51,6 +69,9 @@
             <a href="learning.html"><i class="fa-solid fa-graduation-cap"></i> LEARNING HUB</a>
             <a href="project.html"><i class="fa-solid fa-microchip"></i> PROJECT LAB</a>
             <a href="labs.html" class="active"><i class="fa-solid fa-flask"></i> VIRTUAL LABS</a>
+            <a href="arena.html"><i class="fa-solid fa-khanda"></i> BATTLE ARENA</a>
+            <a href="library.html"><i class="fa-solid fa-book"></i> LIBRARY</a>
+            <a href="ai_assistant.html"><i class="fa-solid fa-robot"></i> AI MENTOR</a>
             <a href="community.html"><i class="fa-solid fa-users"></i> COMMUNITY</a>
             <a href="leaderboard.html"><i class="fa-solid fa-trophy"></i> LEADERBOARD</a>
             <a href="profile.html"><i class="fa-solid fa-id-card"></i> MY PROFILE</a>
@@ -58,41 +79,68 @@
         </aside>
 
         <main class="main-content">
-            
             <div class="section-header">
-                <h2>ENGINEERING WORKBENCH</h2>
+                <h2>OMNI-CONTROLLER WORKBENCH</h2>
                 <div class="line"></div>
             </div>
 
+            <div class="cat-header">MICROCONTROLLERS</div>
             <div class="tools-grid">
                 <div class="tool-card active" onclick="loadSim('arduino')">
-                    <i class="fa-solid fa-microchip" style="font-size: 1.8rem; color: var(--neon-cyan); margin-bottom: 0.5rem;"></i>
-                    <h4 style="color: white; margin: 0; font-size: 0.9rem;">ARDUINO</h4>
-                    <small style="color: gray; font-size: 0.7rem;">Wokwi Sim</small>
+                    <i class="fa-solid fa-microchip card-icon" style="color: #00979d;"></i>
+                    <h4 class="card-title">ARDUINO UNO</h4>
+                    <span class="card-sub">C++ / AVR</span>
+                </div>
+
+                <div class="tool-card" onclick="loadSim('esp32')">
+                    <i class="fa-solid fa-wifi card-icon" style="color: #e5b505;"></i>
+                    <h4 class="card-title">ESP32 (IoT)</h4>
+                    <span class="card-sub">WiFi / Bluetooth</span>
+                </div>
+
+                <div class="tool-card" onclick="loadSim('pico')">
+                    <i class="fa-brands fa-raspberry-pi card-icon" style="color: #c51a4a;"></i>
+                    <h4 class="card-title">PI PICO</h4>
+                    <span class="card-sub">MicroPython</span>
+                </div>
+
+                <div class="tool-card" onclick="loadSim('stm32')">
+                    <i class="fa-solid fa-gears card-icon" style="color: #00d2ff;"></i>
+                    <h4 class="card-title">STM32</h4>
+                    <span class="card-sub">ARM Cortex</span>
+                </div>
+
+                <div class="tool-card" onclick="loadSim('microbit')">
+                    <i class="fa-solid fa-square card-icon" style="color: #00ff00;"></i>
+                    <h4 class="card-title">MICRO:BIT</h4>
+                    <span class="card-sub">Education</span>
+                </div>
+            </div>
+
+            <div class="cat-header">ENGINEERING SUITE</div>
+            <div class="tools-grid">
+                <div class="tool-card" onclick="loadSim('plc')">
+                    <i class="fa-solid fa-industry card-icon" style="color: #ff9900;"></i>
+                    <h4 class="card-title">PLC LOGIC</h4>
+                    <span class="card-sub">Industrial Auto</span>
                 </div>
 
                 <div class="tool-card" onclick="loadSim('pcb')">
-                    <i class="fa-solid fa-layer-group" style="font-size: 1.8rem; color: gold; margin-bottom: 0.5rem;"></i>
-                    <h4 style="color: white; margin: 0; font-size: 0.9rem;">PCB STUDIO</h4>
-                    <small style="color: gray; font-size: 0.7rem;">EasyEDA</small>
+                    <i class="fa-solid fa-layer-group card-icon" style="color: gold;"></i>
+                    <h4 class="card-title">PCB STUDIO</h4>
+                    <span class="card-sub">EasyEDA</span>
                 </div>
 
                 <div class="tool-card" onclick="loadSim('3d')">
-                    <i class="fa-solid fa-cube" style="font-size: 1.8rem; color: #ff00ff; margin-bottom: 0.5rem;"></i>
-                    <h4 style="color: white; margin: 0; font-size: 0.9rem;">3D CAD</h4>
-                    <small style="color: gray; font-size: 0.7rem;">Tinkercad</small>
+                    <i class="fa-solid fa-cube card-icon" style="color: #ff00ff;"></i>
+                    <h4 class="card-title">3D CAD</h4>
+                    <span class="card-sub">Tinkercad</span>
                 </div>
 
                 <div class="tool-card" onclick="loadSim('ros')">
-                    <i class="fa-solid fa-robot" style="font-size: 1.8rem; color: #00ff00; margin-bottom: 0.5rem;"></i>
-                    <h4 style="color: white; margin: 0; font-size: 0.9rem;">ROS 2 VIZ</h4>
-                    <small style="color: gray; font-size: 0.7rem;">Foxglove</small>
-                </div>
-
-                <div class="tool-card" onclick="loadSim('ai')">
-                    <i class="fa-solid fa-brain" style="font-size: 1.8rem; color: #ff5555; margin-bottom: 0.5rem;"></i>
-                    <h4 style="color: white; margin: 0; font-size: 0.9rem;">NEURAL NET</h4>
-                    <small style="color: gray; font-size: 0.7rem;">TensorFlow</small>
+                    <i class="fa-solid fa-robot card-icon" style="color: #ffffff;"></i>
+                    <h4 class="card-title">ROS 2 VIZ</h4>
+                    <span class="card-sub">Foxglove</span>
                 </div>
             </div>
 
@@ -102,12 +150,12 @@
                 
                 <div id="ext-overlay" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); flex-direction: column; align-items: center; justify-content: center; z-index: 10; border-radius: 10px;">
                     <i id="ext-icon" class="fa-solid fa-external-link-alt" style="font-size: 4rem; color: gold; margin-bottom: 1.5rem;"></i>
-                    <h2 id="ext-title" style="color: white; font-family: 'Orbitron';">LAUNCHING STUDIO</h2>
+                    <h2 id="ext-title" style="color: white; font-family: 'Orbitron'; text-align: center;">LAUNCHING STUDIO</h2>
                     <p style="color: gray; margin-bottom: 2rem; max-width: 400px; text-align: center;">
-                        This workstation requires a high-performance environment.
+                        This advanced workspace requires a full-screen environment.
                     </p>
                     <a id="ext-link" href="#" target="_blank" class="btn-primary" style="padding: 1rem 3rem; font-size: 1.2rem; text-decoration: none;">
-                        OPEN WORKSTATION <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        OPEN WORKSPACE <i class="fa-solid fa-arrow-up-right-from-square"></i>
                     </a>
                 </div>
 
@@ -128,40 +176,59 @@
             const link = document.getElementById('ext-link');
             const title = document.getElementById('ext-title');
             
-            // 1. Highlight Card
+            // Highlight Active Card
             document.querySelectorAll('.tool-card').forEach(c => c.classList.remove('active'));
             event.currentTarget.classList.add('active');
 
-            // 2. Reset View
+            // Reset View
             overlay.style.display = 'none';
             frame.style.display = 'block';
 
-            // 3. Logic Switch
-            if(type === 'arduino') {
-                frame.src = "https://wokwi.com/projects/new/arduino-uno?dark=1";
-            } 
-            else if (type === 'pcb') {
-                overlay.style.display = 'flex';
-                frame.style.display = 'none';
-                title.innerText = "OPEN PCB STUDIO";
-                link.href = "https://easyeda.com/editor";
-            } 
-            else if (type === '3d') {
-                overlay.style.display = 'flex';
-                frame.style.display = 'none';
-                title.innerText = "OPEN TINKERCAD 3D";
-                link.href = "https://www.tinkercad.com/dashboard";
+            // --- CONTROLLER LOGIC ---
+            switch(type) {
+                // INTERNAL SIMULATIONS (Wokwi)
+                case 'arduino':
+                    frame.src = "https://wokwi.com/projects/new/arduino-uno?dark=1";
+                    break;
+                case 'esp32':
+                    frame.src = "https://wokwi.com/projects/new/esp32?dark=1";
+                    break;
+                case 'pico':
+                    frame.src = "https://wokwi.com/projects/new/pi-pico?dark=1";
+                    break;
+                case 'stm32':
+                    frame.src = "https://wokwi.com/projects/new/stm32?dark=1";
+                    break;
+                case 'microbit':
+                    frame.src = "https://wokwi.com/projects/new/microbit?dark=1";
+                    break;
+
+                // EXTERNAL TOOLS (Heavy Apps)
+                case 'plc':
+                    showOverlay("PLC FIDDLE", "https://www.plcfiddle.com/");
+                    break;
+                case 'pcb':
+                    showOverlay("EASYEDA PCB", "https://easyeda.com/editor");
+                    break;
+                case '3d':
+                    showOverlay("TINKERCAD 3D", "https://www.tinkercad.com/dashboard");
+                    break;
+                case 'ros':
+                    showOverlay("FOXGLOVE ROS 2", "https://studio.foxglove.dev/");
+                    break;
             }
-            else if (type === 'ros') {
-                // Foxglove for ROS 2 Viz
-                overlay.style.display = 'flex';
-                frame.style.display = 'none';
-                title.innerText = "LAUNCH ROS 2 VIZ";
-                link.href = "https://studio.foxglove.dev/";
-            }
-            else if (type === 'ai') {
-                frame.src = "https://playground.tensorflow.org/?embedded=true";
-            }
+        }
+
+        function showOverlay(name, url) {
+            const overlay = document.getElementById('ext-overlay');
+            const frame = document.getElementById('lab-frame');
+            const title = document.getElementById('ext-title');
+            const link = document.getElementById('ext-link');
+
+            frame.style.display = 'none';
+            overlay.style.display = 'flex';
+            title.innerText = "LAUNCH " + name;
+            link.href = url;
         }
     </script>
 </body>

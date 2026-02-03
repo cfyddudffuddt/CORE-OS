@@ -12,145 +12,81 @@
     <link rel="stylesheet" href="style.css">
     
     <style>
-        /* === RESPONSIVE LAYOUT ENGINE === */
+        /* === GLOBAL RESET & LAYOUT === */
+        /* This is crucial! It makes padding stay INSIDE the box width. */
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             background-color: #050505;
             margin: 0;
-            overflow-x: hidden;
+            overflow-x: hidden; /* Prevents horizontal scrollbar */
         }
 
-        /* 1. TOP NAV */
+        /* === SCROLLBAR STYLING === */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #050505; }
+        ::-webkit-scrollbar-thumb { background: var(--neon-cyan); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #fff; }
+
+        /* 1. TOP NAV (Fixed Height: 60px) */
         nav {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 60px;
+            position: fixed; top: 0; left: 0; width: 100%; height: 60px;
             background: rgba(0, 0, 0, 0.9);
             border-bottom: 1px solid var(--glass-border);
             z-index: 1000;
-            display: flex;
-            align-items: center;
-            padding: 0 1rem; /* Less padding on mobile */
+            display: flex; align-items: center; padding: 0 1rem;
             backdrop-filter: blur(10px);
-            box-sizing: border-box; /* Fix width calculation */
         }
 
-        /* 2. SIDEBAR (The Hybrid Menu) */
+        /* 2. SIDEBAR (Fixed Width: 250px) */
         .sidebar {
-            position: fixed;
-            top: 60px;
-            left: 0;
-            width: 250px;
-            height: calc(100vh - 60px);
-            background: rgba(0, 0, 0, 0.95); /* Darker for mobile readability */
+            position: fixed; top: 60px; left: 0;
+            width: 250px; height: calc(100vh - 60px);
+            background: rgba(0, 0, 0, 0.95);
             border-right: 1px solid var(--glass-border);
-            overflow-y: auto;
-            padding-top: 1rem;
+            overflow-y: auto; padding-top: 1rem;
             z-index: 900;
-            transition: transform 0.3s ease-in-out; /* Smooth Slide Animation */
+            transition: transform 0.3s ease-in-out;
         }
 
-        /* 3. MAIN CONTENT */
+        /* 3. MAIN CONTENT (Precise Calculation) */
         .main-content {
-            margin-top: 60px;
-            padding: 2rem;
-            min-height: 100vh;
-            transition: margin-left 0.3s ease-in-out;
+            margin-top: 60px; /* Push down for Nav */
+            margin-left: 250px; /* Push right for Sidebar */
+            width: calc(100% - 250px); /* Exact remaining width */
+            padding: 2rem; /* Padding inside the content area */
+            min-height: calc(100vh - 60px);
+            transition: margin-left 0.3s ease-in-out, width 0.3s ease-in-out;
         }
 
-        /* === DESKTOP MODE (Screens larger than 768px) === */
-        @media (min-width: 769px) {
-            .sidebar { transform: translateX(0); } /* Always visible */
-            .main-content { margin-left: 250px; } /* Push content right */
-            #menu-btn { display: none; } /* Hide hamburger button */
-        }
+        /* === DESKTOP MODE (Default) === */
+        #menu-btn { display: none; }
 
-        /* === MOBILE MODE (Screens smaller than 768px) === */
+        /* === MOBILE MODE === */
         @media (max-width: 768px) {
-            .sidebar { transform: translateX(-100%); } /* Hidden to the left */
-            .sidebar.active { transform: translateX(0); } /* Slide in when active */
-            .main-content { margin-left: 0; padding: 1rem; } /* Full width content */
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.active { transform: translateX(0); }
             
-            #menu-btn { 
-                display: block; 
-                color: var(--neon-cyan); 
-                font-size: 1.5rem; 
-                cursor: pointer; 
-                margin-right: 1rem;
-            }
+            /* On mobile, content takes full width */
+            .main-content { margin-left: 0 !important; width: 100% !important; padding: 1rem; }
             
-            /* Overlay to darken background when menu is open */
-            #overlay {
-                display: none;
-                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-                background: rgba(0,0,0,0.7);
-                z-index: 800;
-            }
+            #menu-btn { display: block; color: var(--neon-cyan); font-size: 1.5rem; cursor: pointer; margin-right: 1rem; }
+            #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 800; }
             #overlay.active { display: block; }
         }
 
-        /* WIDGET GRIDS */
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Auto-stacking */
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-        
-        .card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 1.5rem;
-            border-radius: 12px;
-            position: relative;
-            transition: 0.3s;
-        }
-        .card:hover {
-            border-color: var(--neon-cyan);
-            box-shadow: 0 0 15px rgba(0, 243, 255, 0.1);
-            transform: translateY(-5px);
-        }
+        /* --- WIDGET STYLES (No changes needed here) --- */
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); padding: 1.5rem; border-radius: 12px; position: relative; transition: 0.3s; }
+        .card:hover { border-color: var(--neon-cyan); box-shadow: 0 0 15px rgba(0, 243, 255, 0.1); transform: translateY(-5px); }
         .card h3 { color: white; font-family: 'Orbitron'; margin-bottom: 0.5rem; }
         .card p { color: gray; font-size: 0.9rem; margin-bottom: 1.5rem; }
         .card-icon { position: absolute; top: 1rem; right: 1rem; font-size: 2rem; opacity: 0.2; color: white; }
-        
         .stat-val { font-size: 2.5rem; font-family: 'Orbitron'; color: white; margin-bottom: 0.5rem; }
-        
-        .action-btn {
-            display: block; text-align: center; padding: 0.8rem;
-            background: rgba(0, 243, 255, 0.1); border: 1px solid var(--neon-cyan);
-            color: var(--neon-cyan); text-decoration: none; border-radius: 5px;
-            font-weight: bold; transition: 0.3s;
-        }
-        .action-btn:hover { background: var(--neon-cyan); color: black; 
-        
-        /* 1. Sidebar Scrollbar */
-        .sidebar::-webkit-scrollbar {
-            width: 6px; /* Make it thin */
-        }
-        .sidebar::-webkit-scrollbar-track {
-            background: #050505; /* Match background */
-        }
-        .sidebar::-webkit-scrollbar-thumb {
-            background: #333; /* Dark Grey Handle */
-            border-radius: 3px;
-        }
-        .sidebar::-webkit-scrollbar-thumb:hover {
-            background: var(--neon-cyan); /* Glow on hover */
-        }
-
-        /* 2. Main Page Scrollbar */
-        body::-webkit-scrollbar {
-            width: 8px;
-        }
-        body::-webkit-scrollbar-track {
-            background: #050505;
-        }
-        body::-webkit-scrollbar-thumb {
-            background: var(--neon-cyan);
-            border-radius: 4px;
-        }
+        .action-btn { display: block; text-align: center; padding: 0.8rem; background: rgba(0, 243, 255, 0.1); border: 1px solid var(--neon-cyan); color: var(--neon-cyan); text-decoration: none; border-radius: 5px; font-weight: bold; transition: 0.3s; }
+        .action-btn:hover { background: var(--neon-cyan); color: black; }
     </style>
 </head>
 <body>
@@ -159,7 +95,6 @@
 
     <nav>
         <i class="fa-solid fa-bars" id="menu-btn" onclick="toggleMenu()"></i>
-
         <div class="logo" style="color: var(--neon-cyan); font-family: 'Orbitron'; font-weight: bold; font-size: 1.5rem;">C.O.R.E <span class="blink">_</span></div>
         <div id="user-display" style="margin-left: auto; color: white; font-size: 0.9rem;">DETECTING...</div>
     </nav>
@@ -256,7 +191,6 @@
     <script src="firebase-config.js"></script>
 
     <script>
-        // MOBILE MENU TOGGLE
         function toggleMenu() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('overlay');
@@ -264,10 +198,8 @@
             overlay.classList.toggle('active');
         }
 
-        // AUTH & DATA LOADING
         auth.onAuthStateChanged(user => {
             if (user) {
-                // ADMIN CHECK (Secret Button)
                 const ADMIN_EMAIL = "futurevisioual2020@gmail.com"; 
                 if (user.email === ADMIN_EMAIL) {
                     document.querySelector('.sidebar').innerHTML += `
