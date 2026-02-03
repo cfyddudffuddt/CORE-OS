@@ -12,24 +12,52 @@
     <link rel="stylesheet" href="style.css">
     
     <style>
-        /* === SCROLL FIX === */
+        /* === STABLE SCROLL LAYOUT === */
         body {
-            overflow: hidden; /* Keeps the Sidebar locked in place */
+            background-color: #050505; /* Dark background */
+            margin: 0;
+            overflow-x: hidden; /* Prevent side-scroll */
         }
-        .main-content {
-            height: 100vh;         /* Takes full screen height */
-            overflow-y: auto;      /* Adds scrollbar ONLY to content */
-            padding-bottom: 100px; /* Extra space at bottom for scrolling */
-            scrollbar-width: thin; /* Sleek scrollbar for Firefox */
-            scrollbar-color: var(--neon-cyan) rgba(0,0,0,0.3);
-        }
-        
-        /* Webkit Scrollbar (Chrome/Edge/Safari) */
-        .main-content::-webkit-scrollbar { width: 8px; }
-        .main-content::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); }
-        .main-content::-webkit-scrollbar-thumb { background: var(--neon-cyan); border-radius: 4px; }
 
-        /* WIDGET GRID */
+        /* 1. FIXED TOP NAV */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            z-index: 1000; /* Always on top */
+            background: rgba(0, 0, 0, 0.9);
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            backdrop-filter: blur(10px);
+        }
+
+        /* 2. FIXED SIDEBAR */
+        .sidebar {
+            position: fixed;
+            top: 60px; /* Below Nav */
+            left: 0;
+            width: 250px;
+            height: calc(100vh - 60px); /* Full height minus Nav */
+            background: rgba(0, 0, 0, 0.8);
+            border-right: 1px solid var(--glass-border);
+            overflow-y: auto; /* Scroll sidebar if it gets too long */
+            z-index: 900;
+            padding-top: 1rem;
+        }
+
+        /* 3. SCROLLABLE MAIN CONTENT */
+        .main-content {
+            margin-left: 250px; /* Push content right to not hide behind sidebar */
+            margin-top: 60px;   /* Push content down to not hide behind nav */
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        /* WIDGET GRID (Auto-Responsive) */
         .grid-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -44,127 +72,123 @@
             border-radius: 12px;
             transition: 0.3s;
             position: relative;
-            overflow: hidden;
         }
         .card:hover {
             transform: translateY(-5px);
             border-color: var(--neon-cyan);
             box-shadow: 0 0 20px rgba(0, 243, 255, 0.1);
         }
-        .card h3 { color: white; font-size: 1.1rem; margin-bottom: 0.5rem; font-family: 'Orbitron'; }
+        .card h3 { color: white; font-family: 'Orbitron'; margin-bottom: 0.5rem; }
         .card p { color: gray; font-size: 0.9rem; margin-bottom: 1.5rem; }
         .card-icon { position: absolute; top: 1rem; right: 1rem; font-size: 2rem; opacity: 0.2; color: white; }
         
         .stat-val { font-size: 2.5rem; font-family: 'Orbitron'; color: white; margin-bottom: 0.5rem; }
-        
-        /* QUICK ACTIONS */
         .action-btn {
-            display: block;
-            text-align: center;
-            padding: 0.8rem;
-            background: rgba(0, 243, 255, 0.1);
-            border: 1px solid var(--neon-cyan);
-            color: var(--neon-cyan);
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: bold;
-            transition: 0.3s;
+            display: block; text-align: center; padding: 0.8rem;
+            background: rgba(0, 243, 255, 0.1); border: 1px solid var(--neon-cyan);
+            color: var(--neon-cyan); text-decoration: none; border-radius: 5px;
+            font-weight: bold; transition: 0.3s;
         }
         .action-btn:hover { background: var(--neon-cyan); color: black; }
+
+        /* MOBILE FIX */
+        @media (max-width: 768px) {
+            .sidebar { display: none; } /* Hide sidebar on mobile (use hamburger later) */
+            .main-content { margin-left: 0; }
+        }
     </style>
 </head>
 <body>
 
-    <nav class="glass-panel" style="position: fixed; top: 0; width: 100%; z-index: 100;">
-        <div class="logo">C.O.R.E <span class="blink">_</span></div>
-        <div class="user-menu" id="user-display">DETECTING USER...</div>
+    <nav>
+        <div class="logo" style="color: var(--neon-cyan); font-family: 'Orbitron'; font-weight: bold; font-size: 1.5rem;">C.O.R.E <span class="blink">_</span></div>
+        <div id="user-display" style="margin-left: auto; color: white; font-size: 0.9rem;">DETECTING USER...</div>
     </nav>
 
-    <div class="dashboard-container">
-        <aside class="sidebar">
-            <a href="dashboard.html" class="active"><i class="fa-solid fa-chart-line"></i> OVERVIEW</a>
-            <a href="learning.html"><i class="fa-solid fa-graduation-cap"></i> LEARNING HUB</a>
-            <a href="project.html"><i class="fa-solid fa-microchip"></i> PROJECT LAB</a>
-            <a href="labs.html"><i class="fa-solid fa-flask"></i> VIRTUAL LABS</a>
-            <a href="library.html"><i class="fa-solid fa-book"></i> LIBRARY</a>
-            <a href="community.html"><i class="fa-solid fa-users"></i> COMMUNITY</a>
-            <a href="leaderboard.html"><i class="fa-solid fa-trophy"></i> LEADERBOARD</a>
-            <a href="profile.html"><i class="fa-solid fa-id-card"></i> MY PROFILE</a>
-            <a href="about.html"><i class="fa-solid fa-circle-info"></i> SYSTEM INFO</a>
-        </aside>
+    <aside class="sidebar">
+        <a href="dashboard.html" class="active"><i class="fa-solid fa-chart-line"></i> OVERVIEW</a>
+        <a href="learning.html"><i class="fa-solid fa-graduation-cap"></i> LEARNING HUB</a>
+        <a href="project.html"><i class="fa-solid fa-microchip"></i> PROJECT LAB</a>
+        <a href="labs.html"><i class="fa-solid fa-flask"></i> VIRTUAL LABS</a>
+        <a href="library.html"><i class="fa-solid fa-book"></i> LIBRARY</a>
+        <a href="ai_assistant.html"><i class="fa-solid fa-robot"></i> AI MENTOR</a>
+        <a href="community.html"><i class="fa-solid fa-users"></i> COMMUNITY</a>
+        <a href="leaderboard.html"><i class="fa-solid fa-trophy"></i> LEADERBOARD</a>
+        <a href="profile.html"><i class="fa-solid fa-id-card"></i> MY PROFILE</a>
+        <a href="about.html"><i class="fa-solid fa-circle-info"></i> SYSTEM INFO</a>
+    </aside>
 
-        <main class="main-content">
-            
-            <div class="section-header" style="margin-top: 1rem;">
-                <h2>COMMAND DECK</h2>
-                <div class="line"></div>
+    <main class="main-content">
+        
+        <div class="section-header">
+            <h2 style="color: white; font-family: 'Orbitron'; margin-bottom: 0.5rem;">COMMAND DECK</h2>
+            <div style="width: 50px; height: 3px; background: var(--neon-cyan);"></div>
+        </div>
+
+        <div class="glass-panel" style="margin: 2rem 0; padding: 2rem; background: linear-gradient(90deg, rgba(0,243,255,0.1), transparent); border-left: 4px solid var(--neon-cyan);">
+            <h1 id="welcome-msg" style="font-family: 'Orbitron'; color: white;">WELCOME BACK, PILOT.</h1>
+            <p style="color: gray;">System Status: <span style="color: #00ff00;">ONLINE</span> | Defcon: 5</p>
+        </div>
+
+        <div class="grid-container">
+            <div class="card">
+                <i class="fa-solid fa-bolt card-icon"></i>
+                <h3>YOUR RANK</h3>
+                <div class="stat-val" id="user-points">0</div>
+                <p>Total Experience Points</p>
+                <a href="leaderboard.html" class="action-btn">VIEW RANKING</a>
             </div>
 
-            <div class="glass-panel" style="margin-bottom: 2rem; background: linear-gradient(90deg, rgba(0,243,255,0.1), transparent);">
-                <h1 id="welcome-msg" style="font-family: 'Orbitron';">WELCOME BACK, PILOT.</h1>
-                <p style="color: gray;">System Status: <span style="color: #00ff00;">ONLINE</span> | Defcon: 5</p>
+            <div class="card">
+                <i class="fa-solid fa-microchip card-icon"></i>
+                <h3>PROJECTS</h3>
+                <div class="stat-val">ACTIVE</div>
+                <p>Submit builds to earn rep.</p>
+                <a href="project.html" class="action-btn">SUBMIT PROJECT</a>
             </div>
 
-            <div class="grid-container">
-                <div class="card">
-                    <i class="fa-solid fa-bolt card-icon"></i>
-                    <h3>YOUR RANK</h3>
-                    <div class="stat-val" id="user-points">0</div>
-                    <p>Total Experience Points</p>
-                    <a href="leaderboard.html" class="action-btn">VIEW RANKING</a>
-                </div>
+            <div class="card">
+                <i class="fa-solid fa-book-open card-icon"></i>
+                <h3>LIBRARY</h3>
+                <div class="stat-val">OPEN</div>
+                <p>Access engineering archives.</p>
+                <a href="library.html" class="action-btn">BROWSE BOOKS</a>
+            </div>
+        </div>
 
-                <div class="card">
-                    <i class="fa-solid fa-microchip card-icon"></i>
-                    <h3>PROJECTS</h3>
-                    <div class="stat-val">ACTIVE</div>
-                    <p>Submit builds to earn rep.</p>
-                    <a href="project.html" class="action-btn">SUBMIT PROJECT</a>
-                </div>
+        <div class="section-header" style="margin-top: 3rem;">
+            <h2 style="color: white; font-family: 'Orbitron'; margin-bottom: 0.5rem;">QUICK ACCESS</h2>
+            <div style="width: 50px; height: 3px; background: white;"></div>
+        </div>
 
-                <div class="card">
-                    <i class="fa-solid fa-book-open card-icon"></i>
-                    <h3>LIBRARY</h3>
-                    <div class="stat-val">OPEN</div>
-                    <p>Access engineering archives.</p>
-                    <a href="library.html" class="action-btn">BROWSE BOOKS</a>
-                </div>
+        <div class="grid-container">
+            <div class="card">
+                <i class="fa-solid fa-flask card-icon" style="color: gold; opacity: 0.4;"></i>
+                <h3 style="color: gold;">VIRTUAL LABS</h3>
+                <p>Arduino, PCB, & 3D Modeling.</p>
+                <a href="labs.html" class="action-btn" style="border-color: gold; color: gold;">ENTER LAB</a>
             </div>
 
-            <div class="section-header">
-                <h2>QUICK ACCESS</h2>
-                <div class="line"></div>
+            <div class="card">
+                <i class="fa-solid fa-robot card-icon" style="color: #00ff00; opacity: 0.4;"></i>
+                <h3 style="color: #00ff00;">AI MENTOR</h3>
+                <p>Debug code with C.O.R.E. AI.</p>
+                <a href="ai_assistant.html" class="action-btn" style="border-color: #00ff00; color: #00ff00;">START CHAT</a>
             </div>
 
-            <div class="grid-container">
-                <div class="card">
-                    <i class="fa-solid fa-flask card-icon" style="color: gold; opacity: 0.4;"></i>
-                    <h3 style="color: gold;">VIRTUAL LABS</h3>
-                    <p>Arduino, PCB, & 3D Modeling Simulators.</p>
-                    <a href="labs.html" class="action-btn" style="border-color: gold; color: gold;">ENTER LAB</a>
-                </div>
-
-                <div class="card">
-                    <i class="fa-solid fa-video card-icon" style="color: #ff5555; opacity: 0.4;"></i>
-                    <h3 style="color: #ff5555;">CLASSROOM</h3>
-                    <p>Watch latest robotics lectures.</p>
-                    <a href="learning.html" class="action-btn" style="border-color: #ff5555; color: #ff5555;">RESUME LEARNING</a>
-                </div>
-
-                <div class="card">
-                    <i class="fa-solid fa-id-badge card-icon" style="color: #bd00ff; opacity: 0.4;"></i>
-                    <h3 style="color: #bd00ff;">IDENTITY</h3>
-                    <p>Update bio, photo & credentials.</p>
-                    <a href="profile.html" class="action-btn" style="border-color: #bd00ff; color: #bd00ff;">EDIT PROFILE</a>
-                </div>
+            <div class="card">
+                <i class="fa-solid fa-video card-icon" style="color: #ff5555; opacity: 0.4;"></i>
+                <h3 style="color: #ff5555;">CLASSROOM</h3>
+                <p>Watch robotics lectures.</p>
+                <a href="learning.html" class="action-btn" style="border-color: #ff5555; color: #ff5555;">RESUME</a>
             </div>
+        </div>
 
-            <div class="glass-panel" style="text-align: center; margin-top: 2rem;">
-                <p style="color: gray; font-size: 0.8rem;">C.O.R.E. OS v1.0 | Kangeyam Institute of Technology</p>
-            </div>
+        <div style="text-align: center; margin-top: 3rem; color: gray; font-size: 0.8rem; padding-bottom: 2rem;">
+            C.O.R.E. OS v1.0 | Kangeyam Institute of Technology
+        </div>
 
-        </main>
-    </div>
+    </main>
 
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
@@ -174,13 +198,18 @@
     <script>
         auth.onAuthStateChanged(user => {
             if (user) {
-                // Get User Details
                 db.collection('users').doc(user.uid).get().then(doc => {
                     const data = doc.data();
                     const name = data.displayName || user.email.split('@')[0];
                     const points = data.points || 0;
 
-                    document.getElementById('user-display').innerHTML = `<div style="display:flex; align-items:center; gap:10px;"><img src="${data.photoURL || 'https://cdn-icons-png.flaticon.com/512/149/149071.png'}" style="width:30px;height:30px;border-radius:50%;border:1px solid gold;"> ${name.toUpperCase()}</div> <a href="#" onclick="auth.signOut()" class="btn-secondary" style="margin-left:10px; font-size:0.7rem;">LOGOUT</a>`;
+                    document.getElementById('user-display').innerHTML = `
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <img src="${data.photoURL || 'https://cdn-icons-png.flaticon.com/512/149/149071.png'}" style="width:30px;height:30px;border-radius:50%;border:1px solid gold;"> 
+                            ${name.toUpperCase()}
+                        </div> 
+                        <a href="#" onclick="auth.signOut()" class="btn-secondary" style="margin-left:15px; font-size:0.7rem; border:1px solid white; padding:2px 8px; text-decoration:none; color:white;">LOGOUT</a>
+                    `;
                     
                     document.getElementById('welcome-msg').innerText = `WELCOME BACK, ${name.toUpperCase()}.`;
                     document.getElementById('user-points').innerText = points;
