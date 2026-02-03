@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CORE | BATTLE ARENA</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#FF0000">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* === RESPONSIVE LAYOUT ENGINE === */
+        body { background-color: #050000; overflow-x: hidden; }
+
+        /* NAV & SIDEBAR (Inherit from Dashboard) */
+        /* ... (Assuming style.css handles standard sidebar, we add specific overrides here) ... */
+
+        /* LOBBY */
+        .lobby-container { 
+            display: flex; 
+            flex-wrap: wrap; 
+            justify-content: center; 
+            gap: 1.5rem; 
+            padding: 2rem; 
+            margin-top: 2rem;
+        }
+        .mode-card {
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid #ff0000;
+            padding: 2rem;
+            width: 250px;
+            cursor: pointer;
+            transition: 0.3s;
+            text-align: center;
+            border-radius: 10px;
+        }
+        .mode-card:hover { background: #ff0000; color: black; box-shadow: 0 0 20px #ff0000; transform: scale(1.05); }
+
+        /* === BATTLE UI (THE FLEX SYSTEM) === */
+        #battle-ui { 
+            display: none; 
+            height: 85vh; 
+            width: 100%;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 1rem;
+            box-sizing: border-box;
+        }
+        
+        /* TOP BAR: HEALTH BARS */
+        .fighters-row {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-bottom: 2rem;
+        }
+
+        .fighter-card {
+            width: 45%; /* On mobile, they share the top row */
+            padding: 0.8rem;
+            background: rgba(0,0,0,0.8);
+            border: 2px solid gray;
+            border-radius: 10px;
+        }
+        #p1-card { border-color: var(--neon-cyan); }
+        #p2-card { border-color: #ff0000; text-align: right; }
+
+        /* CENTER: QUESTION ZONE */
+        .battle-center {
+            flex: 1; /* Take remaining height */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+        .question-box {
+            background: rgba(255,255,255,0.05);
+            padding: 1.5rem;
+            border: 1px solid white;
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            font-family: 'Space Grotesk';
+            width: 100%;
+            max-width: 600px; /* Limit width on desktop */
+            text-align: center;
+            border-radius: 8px;
+        }
+        .options-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; /* 2 columns default */
+            gap: 1rem; 
+            width: 100%;
+            max-width: 600px;
+        }
+        .opt-btn {
+            background: rgba(0,0,0,0.8);
+            border: 1px solid gray;
+            padding: 1rem;
+            color: white;
+            cursor: pointer;
+            font-family: 'Orbitron';
+            transition: 0.2s;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        .opt-btn:hover { background: white; color: black; }
+
+        /* HP BARS */
+        .hp-bar-bg { width: 100%; height: 15px; background: #333; margin-top: 5px; border-radius: 5px; overflow: hidden; }
+        .hp-bar-fill { height: 100%; width: 100%; transition: width 0.3s; }
+        #p1-hp { background: var(--neon-cyan); }
+        #p2-hp { background: #ff0000; }
+
+        /* === DESKTOP OVERRIDES (Large Screens) === */
+        @media (min-width: 900px) {
+            #battle-ui {
+                flex-direction: row; /* Side by side layout */
+                align-items: center;
+            }
+            .fighters-row {
+                position: absolute; /* Detach from flow */
+                top: 0; left: 0; width: 100%; height: 100%;
+                pointer-events: none; /* Let clicks pass through to buttons */
+                justify-content: space-between;
+                padding: 2rem;
+                box-sizing: border-box;
+            }
+            .fighter-card {
+                width: 250px; /* Fixed width sidebar cards */
+                height: fit-content;
+                pointer-events: auto;
+            }
+            #p1-card { position: absolute; top: 100px; left: 50px; }
+            #p2-card { position: absolute; top: 100px; right: 50px; }
+            
+            .battle-center {
+                margin-top: 0; /* Centered perfectly */
+            }
+        }
+
+        /* MOBILE TWEAKS */
+        @media (max-width: 600px) {
+            .options-grid { grid-template-columns: 1fr; } /* Stack buttons on small phones */
+            .lobby-container { flex-direction: column; align-items: center; }
+            .mode-card { width: 100%; }
+        }
+
+        /* MATCHMAKING OVERLAY */
+        #match-overlay {
+            position: fixed; top:0; left:0; width:100%; height:100%;
+            background: black; z-index: 2000;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 1rem;
+        }
+        .scan-line { width: 100%; height: 2px; background: #ff0000; animation: scan 2s infinite; margin-top: 2rem; }
+        @keyframes scan { 0% {transform:translateY(-20vh);} 100% {transform:translateY(20vh);} }
+    </style>
+</head>
+<body>
+
+    <nav class="glass-panel" style="position: fixed; top: 0; width: 100%; z-index: 100;">
+        <div class="logo" style="color: #ff0000;">ARENA <span class="blink">_</span></div>
+        <div class="user-menu"><a href="dashboard.html" class="btn-secondary" style="border-color: #ff0000; color: #ff0000; font-size: 0.8rem;">EXIT</a></div>
+    </nav>
+
+    <div id="match-overlay">
+        <h1 style="color: #ff0000; font-family: 'Orbitron'; font-size: 2rem;">SEARCHING...</h1>
+        <p style="color: gray;">SCANNING GLOBAL NETWORK</p>
+        <div class="scan-line"></div>
+    </div>
+
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <a href="dashboard.html"><i class="fa-solid fa-chart-line"></i> OVERVIEW</a>
+            <a href="learning.html"><i class="fa-solid fa-graduation-cap"></i> LEARNING HUB</a>
+            <a href="project.html"><i class="fa-solid fa-microchip"></i> PROJECT LAB</a>
+            <a href="labs.html"><i class="fa-solid fa-flask"></i> VIRTUAL LABS</a>
+            <a href="arena.html" class="active" style="color: #ff0000; border-right: 3px solid #ff0000;"><i class="fa-solid fa-khanda"></i> BATTLE ARENA</a>
+            <a href="community.html"><i class="fa-solid fa-users"></i> COMMUNITY</a>
+            <a href="leaderboard.html"><i class="fa-solid fa-trophy"></i> LEADERBOARD</a>
+            <a href="profile.html"><i class="fa-solid fa-id-card"></i> MY PROFILE</a>
+            <a href="about.html"><i class="fa-solid fa-circle-info"></i> SYSTEM INFO</a>
+        </aside>
+
+        <main class="main-content">
+            
+            <div class="section-header">
+                <h2>KNOWLEDGE COMBAT</h2>
+                <div class="line" style="background: #ff0000;"></div>
+            </div>
+
+            <div id="lobby" class="lobby-container">
+                <div class="mode-card" onclick="startMatch('arduino')">
+                    <i class="fa-solid fa-microchip" style="font-size: 2.5rem; margin-bottom: 1rem;"></i>
+                    <h3>ARDUINO</h3>
+                </div>
+
+                <div class="mode-card" onclick="startMatch('ros')">
+                    <i class="fa-solid fa-robot" style="font-size: 2.5rem; margin-bottom: 1rem;"></i>
+                    <h3>ROS 2</h3>
+                </div>
+
+                <div class="mode-card" onclick="startMatch('circuit')">
+                    <i class="fa-solid fa-bolt" style="font-size: 2.5rem; margin-bottom: 1rem;"></i>
+                    <h3>CIRCUITS</h3>
+                </div>
+            </div>
+
+            <div id="battle-ui">
+                
+                <div class="fighters-row">
+                    <div id="p1-card" class="fighter-card">
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="color: var(--neon-cyan); font-weight: bold;">YOU</span>
+                            <span id="p1-hp-text" style="color: gray;">100%</span>
+                        </div>
+                        <div class="hp-bar-bg"><div id="p1-hp" class="hp-bar-fill"></div></div>
+                    </div>
+
+                    <div id="p2-card" class="fighter-card">
+                        <div style="display: flex; justify-content: space-between;">
+                            <span id="p2-name" style="color: #ff0000; font-weight: bold;">BOT</span>
+                            <span id="p2-hp-text" style="color: gray;">100%</span>
+                        </div>
+                        <div class="hp-bar-bg"><div id="p2-hp" class="hp-bar-fill"></div></div>
+                    </div>
+                </div>
+
+                <div class="battle-center">
+                    <div id="q-box" class="question-box">Initialize Battle...</div>
+                    <div id="opt-box" class="options-grid"></div>
+                    <p id="timer" style="margin-top: 1rem; color: gray; font-family: 'Orbitron';">VS</p>
+                </div>
+
+            </div>
+
+        </main>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="firebase-config.js"></script>
+
+    <script>
+        // --- GAME DATA ---
+        const questions = {
+            'arduino': [
+                { q: "Function running once at startup?", a: ["setup()", "loop()", "init()", "start()"], c: 0 },
+                { q: "Standard baud rate?", a: ["9600", "115200", "4800", "300"], c: 0 },
+                { q: "Which pin supports PWM?", a: ["3", "13", "A0", "RESET"], c: 0 },
+                { q: "Voltage of Uno logic?", a: ["5V", "3.3V", "12V", "24V"], c: 0 },
+                { q: "Command to print to PC?", a: ["Serial.print", "Console.log", "print()", "echo"], c: 0 }
+            ],
+            'ros': [
+                { q: "Core comms command?", a: ["roscore", "rosrun", "roslaunch", "init"], c: 0 },
+                { q: "ROS 2 middleware?", a: ["DDS", "TCP", "UDP", "HTTP"], c: 0 },
+                { q: "Tool to visualize data?", a: ["Rviz", "Gazebo", "Catkin", "Rosbag"], c: 0 }
+            ],
+            'circuit': [
+                { q: "Unit of Resistance?", a: ["Ohm", "Volt", "Amp", "Watt"], c: 0 },
+                { q: "V = I * ?", a: ["R", "P", "C", "L"], c: 0 },
+                { q: "Diode allows current...", a: ["One way", "Both ways", "Never", "Randomly"], c: 0 }
+            ]
+        };
+
+        let p1HP = 100;
+        let p2HP = 100;
+        let currentQ = 0;
+        let gameActive = false;
+        let botTimer;
+
+        // --- MATCHMAKING ---
+        function startMatch(mode) {
+            document.getElementById('match-overlay').style.display = 'flex';
+            
+            setTimeout(() => {
+                document.getElementById('match-overlay').style.display = 'none';
+                document.getElementById('lobby').style.display = 'none';
+                document.getElementById('battle-ui').style.display = 'flex'; // Changed to flex for responsive
+                
+                const bots = ["Cyber_Viper", "Code_Ninja", "Robo_Rex", "Circuit_Breaker"];
+                document.getElementById('p2-name').innerText = bots[Math.floor(Math.random() * bots.length)];
+                
+                startGame(mode);
+            }, 2500);
+        }
+
+        // --- BATTLE ENGINE ---
+        function startGame(mode) {
+            p1HP = 100; p2HP = 100; currentQ = 0; gameActive = true;
+            updateHP();
+            const qSet = questions[mode] || questions['arduino'];
+            loadQuestion(qSet);
+        }
+
+        function loadQuestion(qList) {
+            if(!gameActive) return;
+            if(p1HP <= 0 || p2HP <= 0) return endGame();
+
+            const qData = qList[currentQ % qList.length];
+            document.getElementById('q-box').innerText = qData.q;
+            
+            const optDiv = document.getElementById('opt-box');
+            optDiv.innerHTML = "";
+            
+            // Randomize Options
+            let opts = qData.a.map((txt, i) => ({txt, isC: i === qData.c}));
+            opts.sort(() => Math.random() - 0.5);
+
+            opts.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = "opt-btn";
+                btn.innerText = opt.txt;
+                btn.onclick = () => handleMove(opt.isC, qList);
+                optDiv.appendChild(btn);
+            });
+
+            clearTimeout(botTimer);
+            // Bot speed: 2s to 4s
+            botTimer = setTimeout(() => botAttack(qList), Math.random() * 2000 + 2000);
+        }
+
+        function handleMove(isCorrect, qList) {
+            if(!gameActive) return;
+            
+            if(isCorrect) {
+                p2HP -= 20; // Hit enemy
+                flashScreen('green');
+            } else {
+                p1HP -= 10; // Self damage
+                flashScreen('red');
+            }
+            updateHP();
+            currentQ++;
+            loadQuestion(qList);
+        }
+
+        function botAttack(qList) {
+            if(!gameActive) return;
+            // 60% hit chance
+            if(Math.random() > 0.4) {
+                p1HP -= 15;
+                flashScreen('red');
+            }
+            updateHP();
+        }
+
+        function updateHP() {
+            document.getElementById('p1-hp').style.width = p1HP + "%";
+            document.getElementById('p2-hp').style.width = p2HP + "%";
+            document.getElementById('p1-hp-text').innerText = Math.max(0, p1HP) + "%";
+            document.getElementById('p2-hp-text').innerText = Math.max(0, p2HP) + "%";
+
+            if(p1HP <= 0) { endGame("DEFEAT"); }
+            if(p2HP <= 0) { endGame("VICTORY"); }
+        }
+
+        function endGame(result) {
+            gameActive = false;
+            clearTimeout(botTimer);
+            alert(result + "! Returning to lobby...");
+            location.reload();
+        }
+
+        function flashScreen(color) {
+            const center = document.querySelector('.battle-center');
+            center.style.backgroundColor = color === 'red' ? 'rgba(255,0,0,0.1)' : 'rgba(0,255,0,0.1)';
+            setTimeout(() => center.style.backgroundColor = 'transparent', 200);
+        }
+    </script>
+</body>
+</html>
