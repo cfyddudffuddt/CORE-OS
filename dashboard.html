@@ -3,122 +3,192 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CORE | COMMAND CENTER</title>
+    <title>CORE | COMMAND DECK</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#00F3FF">
     
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
-   <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#00F3FF">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <style>
+        /* === SCROLL FIX === */
+        body {
+            overflow: hidden; /* Keeps the Sidebar locked in place */
+        }
+        .main-content {
+            height: 100vh;         /* Takes full screen height */
+            overflow-y: auto;      /* Adds scrollbar ONLY to content */
+            padding-bottom: 100px; /* Extra space at bottom for scrolling */
+            scrollbar-width: thin; /* Sleek scrollbar for Firefox */
+            scrollbar-color: var(--neon-cyan) rgba(0,0,0,0.3);
+        }
+        
+        /* Webkit Scrollbar (Chrome/Edge/Safari) */
+        .main-content::-webkit-scrollbar { width: 8px; }
+        .main-content::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); }
+        .main-content::-webkit-scrollbar-thumb { background: var(--neon-cyan); border-radius: 4px; }
+
+        /* WIDGET GRID */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            border-radius: 12px;
+            transition: 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.1);
+        }
+        .card h3 { color: white; font-size: 1.1rem; margin-bottom: 0.5rem; font-family: 'Orbitron'; }
+        .card p { color: gray; font-size: 0.9rem; margin-bottom: 1.5rem; }
+        .card-icon { position: absolute; top: 1rem; right: 1rem; font-size: 2rem; opacity: 0.2; color: white; }
+        
+        .stat-val { font-size: 2.5rem; font-family: 'Orbitron'; color: white; margin-bottom: 0.5rem; }
+        
+        /* QUICK ACTIONS */
+        .action-btn {
+            display: block;
+            text-align: center;
+            padding: 0.8rem;
+            background: rgba(0, 243, 255, 0.1);
+            border: 1px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .action-btn:hover { background: var(--neon-cyan); color: black; }
+    </style>
 </head>
 <body>
 
     <nav class="glass-panel" style="position: fixed; top: 0; width: 100%; z-index: 100;">
         <div class="logo">C.O.R.E <span class="blink">_</span></div>
-        <div class="user-menu">
-            <button onclick="logout()" class="btn-secondary" style="font-size: 0.7rem; padding: 0.5rem 1rem;">TERMINATE SESSION</button>
-        </div>
+        <div class="user-menu" id="user-display">DETECTING USER...</div>
     </nav>
 
     <div class="dashboard-container">
         <aside class="sidebar">
-            <a href="profile.html"><i class="fa-solid fa-id-card"></i> MY PROFILE</a>
-            <a href="#" class="active"><i class="fa-solid fa-chart-line"></i> OVERVIEW</a>
+            <a href="dashboard.html" class="active"><i class="fa-solid fa-chart-line"></i> OVERVIEW</a>
             <a href="learning.html"><i class="fa-solid fa-graduation-cap"></i> LEARNING HUB</a>
+            <a href="project.html"><i class="fa-solid fa-microchip"></i> PROJECT LAB</a>
+            <a href="labs.html"><i class="fa-solid fa-flask"></i> VIRTUAL LABS</a>
             <a href="library.html"><i class="fa-solid fa-book"></i> LIBRARY</a>
             <a href="community.html"><i class="fa-solid fa-users"></i> COMMUNITY</a>
-            <a href="labs.html"><i class="fa-solid fa-flask"></i> VIRTUAL LABS</a>
-            <a href="project.html"><i class="fa-solid fa-microchip"></i> PROJECT LAB</a>
             <a href="leaderboard.html"><i class="fa-solid fa-trophy"></i> LEADERBOARD</a>
+            <a href="profile.html"><i class="fa-solid fa-id-card"></i> MY PROFILE</a>
             <a href="about.html"><i class="fa-solid fa-circle-info"></i> SYSTEM INFO</a>
         </aside>
 
         <main class="main-content">
-            <div class="welcome-banner">
-                <span class="user-rank">CURRENT RANK: EXPLORER</span>
-                <h1 id="user-greeting">WELCOME BACK, PILOT</h1>
-                <p>SYSTEM SYSTEMS NOMINAL. READY FOR INSTRUCTION.</p>
+            
+            <div class="section-header" style="margin-top: 1rem;">
+                <h2>COMMAND DECK</h2>
+                <div class="line"></div>
             </div>
 
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <span class="stat-number" style="color: var(--neon-cyan);">0</span>
-                    <span class="stat-label">PROJECTS BUILT</span>
+            <div class="glass-panel" style="margin-bottom: 2rem; background: linear-gradient(90deg, rgba(0,243,255,0.1), transparent);">
+                <h1 id="welcome-msg" style="font-family: 'Orbitron';">WELCOME BACK, PILOT.</h1>
+                <p style="color: gray;">System Status: <span style="color: #00ff00;">ONLINE</span> | Defcon: 5</p>
+            </div>
+
+            <div class="grid-container">
+                <div class="card">
+                    <i class="fa-solid fa-bolt card-icon"></i>
+                    <h3>YOUR RANK</h3>
+                    <div class="stat-val" id="user-points">0</div>
+                    <p>Total Experience Points</p>
+                    <a href="leaderboard.html" class="action-btn">VIEW RANKING</a>
                 </div>
-                <div class="stat-card">
-                    <span class="stat-number" id="points-display" style="color: var(--neon-blue);">0</span>
-                    <span class="stat-label">INNOVATION POINTS</span>
+
+                <div class="card">
+                    <i class="fa-solid fa-microchip card-icon"></i>
+                    <h3>PROJECTS</h3>
+                    <div class="stat-val">ACTIVE</div>
+                    <p>Submit builds to earn rep.</p>
+                    <a href="project.html" class="action-btn">SUBMIT PROJECT</a>
                 </div>
-                <div class="stat-card">
-                    <span class="stat-number" id="modules-display" style="color: gold;">0</span>
-                    <span class="stat-label">MODULES ACTIVE</span>
+
+                <div class="card">
+                    <i class="fa-solid fa-book-open card-icon"></i>
+                    <h3>LIBRARY</h3>
+                    <div class="stat-val">OPEN</div>
+                    <p>Access engineering archives.</p>
+                    <a href="library.html" class="action-btn">BROWSE BOOKS</a>
                 </div>
             </div>
 
             <div class="section-header">
-                <h2>ACTIVE DIRECTIVES</h2>
+                <h2>QUICK ACCESS</h2>
                 <div class="line"></div>
             </div>
-            
-            <div class="card glass-panel" style="display: flex; justify-content: space-between; align-items: center;">
-                <div>
-                    <h3 style="color: var(--neon-cyan); margin-bottom: 0.5rem;">MISSION 1: SYSTEM INITIALIZATION</h3>
-                    <p>Access the Learning Hub to begin your training.</p>
+
+            <div class="grid-container">
+                <div class="card">
+                    <i class="fa-solid fa-flask card-icon" style="color: gold; opacity: 0.4;"></i>
+                    <h3 style="color: gold;">VIRTUAL LABS</h3>
+                    <p>Arduino, PCB, & 3D Modeling Simulators.</p>
+                    <a href="labs.html" class="action-btn" style="border-color: gold; color: gold;">ENTER LAB</a>
                 </div>
-                <button class="btn-primary" onclick="window.location.href='learning.html'">BEGIN</button>
+
+                <div class="card">
+                    <i class="fa-solid fa-video card-icon" style="color: #ff5555; opacity: 0.4;"></i>
+                    <h3 style="color: #ff5555;">CLASSROOM</h3>
+                    <p>Watch latest robotics lectures.</p>
+                    <a href="learning.html" class="action-btn" style="border-color: #ff5555; color: #ff5555;">RESUME LEARNING</a>
+                </div>
+
+                <div class="card">
+                    <i class="fa-solid fa-id-badge card-icon" style="color: #bd00ff; opacity: 0.4;"></i>
+                    <h3 style="color: #bd00ff;">IDENTITY</h3>
+                    <p>Update bio, photo & credentials.</p>
+                    <a href="profile.html" class="action-btn" style="border-color: #bd00ff; color: #bd00ff;">EDIT PROFILE</a>
+                </div>
             </div>
+
+            <div class="glass-panel" style="text-align: center; margin-top: 2rem;">
+                <p style="color: gray; font-size: 0.8rem;">C.O.R.E. OS v1.0 | Kangeyam Institute of Technology</p>
+            </div>
+
         </main>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
-    
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
-    
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
-    
     <script src="firebase-config.js"></script>
 
     <script>
-                // Check Login Status
-       // Check Login Status
         auth.onAuthStateChanged(user => {
             if (user) {
-                // --- 1. ADMIN CHECK (SECRET BUTTON) ---
-                const ADMIN_EMAIL = "futurevisioual2020@gmail.com"; // <--- YOUR EMAIL
-                if (user.email === ADMIN_EMAIL) {
-                    const sidebar = document.querySelector('.sidebar');
-                    sidebar.innerHTML += `
-                        <a href="admin.html" style="border: 1px solid red; color: red; margin-top: 2rem;">
-                            <i class="fa-solid fa-lock"></i> ADMIN PANEL
-                        </a>
-                    `;
-                }
+                // Get User Details
+                db.collection('users').doc(user.uid).get().then(doc => {
+                    const data = doc.data();
+                    const name = data.displayName || user.email.split('@')[0];
+                    const points = data.points || 0;
 
-                // --- 2. LOAD DASHBOARD DATA (For Everyone) ---
-                console.log("AUTHORIZED: " + user.email);
-                document.getElementById('user-greeting').innerText = "WELCOME BACK, " + user.email.split('@')[0].toUpperCase();
-
-                // Get Data from Database
-                db.collection('users').doc(user.uid).get().then((doc) => {
-                    if (doc.exists) {
-                        const data = doc.data();
-                        document.getElementById('points-display').innerText = data.points || 0;
-                        document.getElementById('modules-display').innerText = data.modules_completed || 0;
-                        document.querySelector('.user-rank').innerText = "CURRENT RANK: " + (data.rank || "EXPLORER");
-                    }
+                    document.getElementById('user-display').innerHTML = `<div style="display:flex; align-items:center; gap:10px;"><img src="${data.photoURL || 'https://cdn-icons-png.flaticon.com/512/149/149071.png'}" style="width:30px;height:30px;border-radius:50%;border:1px solid gold;"> ${name.toUpperCase()}</div> <a href="#" onclick="auth.signOut()" class="btn-secondary" style="margin-left:10px; font-size:0.7rem;">LOGOUT</a>`;
+                    
+                    document.getElementById('welcome-msg').innerText = `WELCOME BACK, ${name.toUpperCase()}.`;
+                    document.getElementById('user-points').innerText = points;
                 });
-
             } else {
-                // --- 3. NO USER DETECTED -> KICK OUT ---
                 window.location.href = "index.html";
             }
         });
-
-        function logout() {
-            auth.signOut().then(() => { window.location.href = "index.html"; });
-        }
     </script>
 </body>
 </html>
