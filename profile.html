@@ -3,13 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CORE | ID CARD</title>
+    <title>CORE | PASSPORT</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#00F3FF">
     
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
+    <style>
+        .passport-header {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            background: rgba(255,255,255,0.05);
+            padding: 2rem;
+            border-radius: 15px;
+            border: 1px solid var(--neon-cyan);
+            margin-bottom: 2rem;
+        }
+        .passport-photo {
+            width: 100px; height: 100px;
+            border-radius: 50%;
+            border: 2px solid gold;
+        }
+        .skill-tag {
+            display: inline-block;
+            background: rgba(0, 243, 255, 0.1);
+            color: var(--neon-cyan);
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            margin-right: 5px;
+            margin-top: 5px;
+        }
+        .stat-box {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(0,0,0,0.5);
+            border-radius: 10px;
+            border: 1px solid #333;
+        }
+    </style>
 </head>
 <body>
 
@@ -23,58 +57,86 @@
             <a href="dashboard.html"><i class="fa-solid fa-chart-line"></i> OVERVIEW</a>
             <a href="learning.html"><i class="fa-solid fa-graduation-cap"></i> LEARNING HUB</a>
             <a href="project.html"><i class="fa-solid fa-microchip"></i> PROJECT LAB</a>
+            <a href="labs.html"><i class="fa-solid fa-flask"></i> VIRTUAL LABS</a>
+            <a href="arena.html"><i class="fa-solid fa-khanda"></i> BATTLE ARENA</a>
+            <a href="tribes.html"><i class="fa-solid fa-people-group"></i> TRIBES</a>
+            <a href="library.html"><i class="fa-solid fa-book"></i> LIBRARY</a>
+            <a href="ai_assistant.html"><i class="fa-solid fa-robot"></i> AI MENTOR</a>
             <a href="community.html"><i class="fa-solid fa-users"></i> COMMUNITY</a>
             <a href="leaderboard.html"><i class="fa-solid fa-trophy"></i> LEADERBOARD</a>
             <a href="profile.html" class="active"><i class="fa-solid fa-id-card"></i> MY PROFILE</a>
+            <a href="about.html"><i class="fa-solid fa-circle-info"></i> SYSTEM INFO</a>
         </aside>
 
         <main class="main-content">
-            
             <div class="section-header">
-                <h2>OPERATIVE IDENTITY</h2>
+                <h2>DIGITAL ROBOTICS PASSPORT</h2>
                 <div class="line"></div>
             </div>
 
-            <div class="glass-panel" style="max-width: 600px; margin: 0 auto; text-align: center;">
+            <div class="passport-header">
+                <img id="user-img" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" class="passport-photo">
+                <div>
+                    <h2 id="user-name" style="font-family: 'Orbitron'; color: white; margin: 0;">PILOT NAME</h2>
+                    <p id="user-email" style="color: gray; margin: 5px 0;">pilot@core.system</p>
+                    <div id="badges">
+                        <span class="skill-tag">ARDUINO CERTIFIED</span>
+                        <span class="skill-tag">ROS 2 BEGINNER</span>
+                    </div>
+                </div>
+                <div style="margin-left: auto; text-align: right;">
+                    <h1 style="color: gold; font-family: 'Orbitron'; margin: 0;">LVL 5</h1>
+                    <p style="color: gray; margin: 0;">RANK: ENGINEER</p>
+                </div>
+            </div>
+
+            <div class="grid-container">
+                <div class="stat-box">
+                    <h3 style="color: var(--neon-cyan);">85%</h3>
+                    <p style="color: gray; font-size: 0.8rem;">PROJECT SUCCESS</p>
+                </div>
+                <div class="stat-box">
+                    <h3 style="color: #00ff00;">12</h3>
+                    <p style="color: gray; font-size: 0.8rem;">MODULES CLEARED</p>
+                </div>
+                <div class="stat-box">
+                    <h3 style="color: #ff0000;">1,450</h3>
+                    <p style="color: gray; font-size: 0.8rem;">CONTRIBUTION POINTS</p>
+                </div>
+                <div class="stat-box">
+                    <h3 style="color: gold;">4.8</h3>
+                    <p style="color: gray; font-size: 0.8rem;">REPUTATION SCORE</p>
+                </div>
+            </div>
+
+            <div class="glass-panel" style="margin-top: 2rem; padding: 1.5rem;">
+                <h3 style="font-family: 'Orbitron'; color: white;">SKILL HEATMAP</h3>
+                <p style="color: gray; margin-bottom: 1rem;">Visualizing proficiency in core domains.</p>
                 
-                <div style="margin-bottom: 2rem;">
-                    <img id="preview-img" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" 
-                         style="width: 120px; height: 120px; border-radius: 50%; border: 2px solid var(--neon-cyan); object-fit: cover;">
-                    <h2 id="display-name" style="margin-top: 1rem; color: white;">UNKNOWN PILOT</h2>
-                    <p id="display-email" style="color: gray; font-size: 0.9rem;">loading...</p>
+                <div style="margin-bottom: 10px;">
+                    <span style="color: white; font-size: 0.8rem;">ELECTRONICS</span>
+                    <div style="width: 100%; background: #333; height: 10px; border-radius: 5px;">
+                        <div style="width: 80%; background: var(--neon-cyan); height: 100%; border-radius: 5px;"></div>
+                    </div>
                 </div>
 
-                <form id="profile-form" style="text-align: left;">
-                    
-                    <label style="color: var(--neon-cyan);">FULL NAME</label>
-                    <input type="text" id="inp-name" placeholder="Enter Name" required 
-                           style="width: 100%; padding: 0.8rem; margin-bottom: 1rem; background: rgba(0,0,0,0.5); border: 1px solid gray; color: white;">
-
-                    <div style="display: flex; gap: 1rem;">
-                        <div style="flex: 1;">
-                            <label style="color: var(--neon-cyan);">AGE</label>
-                            <input type="number" id="inp-age" placeholder="Age" required 
-                                   style="width: 100%; padding: 0.8rem; margin-bottom: 1rem; background: rgba(0,0,0,0.5); border: 1px solid gray; color: white;">
-                        </div>
-                        <div style="flex: 1;">
-                            <label style="color: var(--neon-cyan);">GENDER</label>
-                            <select id="inp-gender" style="width: 100%; padding: 0.8rem; margin-bottom: 1rem; background: rgba(0,0,0,0.5); border: 1px solid gray; color: white;">
-                                <option value="Male">Male</option>
-                                <option value="Female">Female</option>
-                                <option value="Non-Binary">Non-Binary</option>
-                                <option value="Hidden">Classified</option>
-                            </select>
-                        </div>
+                <div style="margin-bottom: 10px;">
+                    <span style="color: white; font-size: 0.8rem;">PROGRAMMING (C++/PYTHON)</span>
+                    <div style="width: 100%; background: #333; height: 10px; border-radius: 5px;">
+                        <div style="width: 65%; background: #bd00ff; height: 100%; border-radius: 5px;"></div>
                     </div>
+                </div>
 
-                    <label style="color: var(--neon-cyan);">PROFILE PHOTO URL (LINK)</label>
-                    <input type="url" id="inp-photo" placeholder="https://example.com/my-photo.jpg" 
-                           style="width: 100%; padding: 0.8rem; margin-bottom: 0.5rem; background: rgba(0,0,0,0.5); border: 1px solid gray; color: white;">
-                    <small style="color: gray; display: block; margin-bottom: 1rem;">*Paste a direct link to an image (e.g., from LinkedIn, GitHub, or Discord).</small>
+                <div style="margin-bottom: 10px;">
+                    <span style="color: white; font-size: 0.8rem;">MECHANICAL DESIGN (CAD)</span>
+                    <div style="width: 100%; background: #333; height: 10px; border-radius: 5px;">
+                        <div style="width: 40%; background: #ff0000; height: 100%; border-radius: 5px;"></div>
+                    </div>
+                </div>
+            </div>
 
-                    <button type="submit" class="btn-primary" style="width: 100%;">UPDATE IDENTITY RECORD</button>
-                </form>
-
+            <div style="margin-top: 2rem; text-align: center;">
+                <button class="btn-primary" onclick="alert('Exporting Portfolio PDF...')"><i class="fa-solid fa-download"></i> EXPORT PASSPORT (CV)</button>
             </div>
 
         </main>
@@ -86,58 +148,15 @@
     <script src="firebase-config.js"></script>
 
     <script>
-        const form = document.getElementById('profile-form');
-        
         auth.onAuthStateChanged(user => {
             if (user) {
-                // LOAD EXISTING DATA
                 db.collection('users').doc(user.uid).get().then(doc => {
                     const data = doc.data();
-                    document.getElementById('display-email').innerText = user.email;
-                    
-                    if (data.displayName) {
-                        document.getElementById('display-name').innerText = data.displayName;
-                        document.getElementById('inp-name').value = data.displayName;
-                    }
-                    if (data.photoURL) {
-                        document.getElementById('preview-img').src = data.photoURL;
-                        document.getElementById('inp-photo').value = data.photoURL;
-                    }
-                    if (data.age) document.getElementById('inp-age').value = data.age;
-                    if (data.gender) document.getElementById('inp-gender').value = data.gender;
+                    document.getElementById('user-name').innerText = (data.displayName || "PILOT").toUpperCase();
+                    document.getElementById('user-email').innerText = user.email;
+                    document.getElementById('user-img').src = data.photoURL || 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
                 });
-            } else {
-                window.location.href = "index.html";
             }
-        });
-
-        // SAVE DATA
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const user = auth.currentUser;
-            
-            const name = document.getElementById('inp-name').value;
-            const age = document.getElementById('inp-age').value;
-            const gender = document.getElementById('inp-gender').value;
-            const photo = document.getElementById('inp-photo').value;
-
-            // Update Database Document
-            db.collection('users').doc(user.uid).update({
-                displayName: name,
-                age: age,
-                gender: gender,
-                photoURL: photo
-            }).then(() => {
-                // Update Local Display
-                document.getElementById('display-name').innerText = name;
-                if(photo) document.getElementById('preview-img').src = photo;
-                alert("IDENTITY RECORD UPDATED SUCCESSFULLY.");
-            });
-        });
-
-        // Live Preview of Photo URL
-        document.getElementById('inp-photo').addEventListener('input', (e) => {
-            if(e.target.value) document.getElementById('preview-img').src = e.target.value;
         });
     </script>
 </body>

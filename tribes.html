@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CORE | TRIBES</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#00F3FF">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .tribe-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            transition: 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .tribe-card:hover { transform: translateY(-5px); border-color: var(--neon-cyan); }
+        .tribe-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 5px;
+            background: var(--neon-cyan);
+        }
+        .tribe-icon { font-size: 3rem; margin-bottom: 1rem; color: white; }
+        .join-btn {
+            margin-top: 1rem;
+            padding: 0.5rem 1.5rem;
+            border: 1px solid var(--neon-cyan);
+            background: transparent;
+            color: var(--neon-cyan);
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: 'Orbitron';
+        }
+        .join-btn:hover { background: var(--neon-cyan); color: black; }
+    </style>
+</head>
+<body>
+
+    <nav class="glass-panel" style="position: fixed; top: 0; width: 100%; z-index: 100;">
+        <div class="logo">C.O.R.E <span class="blink">_</span></div>
+        <div class="user-menu"><a href="dashboard.html" class="btn-secondary">RETURN TO BASE</a></div>
+    </nav>
+
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <a href="dashboard.html"><i class="fa-solid fa-chart-line"></i> OVERVIEW</a>
+            <a href="learning.html"><i class="fa-solid fa-graduation-cap"></i> LEARNING HUB</a>
+            <a href="project.html"><i class="fa-solid fa-microchip"></i> PROJECT LAB</a>
+            <a href="labs.html"><i class="fa-solid fa-flask"></i> VIRTUAL LABS</a>
+            <a href="arena.html"><i class="fa-solid fa-khanda"></i> BATTLE ARENA</a>
+            <a href="tribes.html" class="active"><i class="fa-solid fa-people-group"></i> TRIBES</a>
+            <a href="library.html"><i class="fa-solid fa-book"></i> LIBRARY</a>
+            <a href="ai_assistant.html"><i class="fa-solid fa-robot"></i> AI MENTOR</a>
+            <a href="community.html"><i class="fa-solid fa-users"></i> COMMUNITY</a>
+            <a href="leaderboard.html"><i class="fa-solid fa-trophy"></i> LEADERBOARD</a>
+            <a href="profile.html"><i class="fa-solid fa-id-card"></i> MY PROFILE</a>
+            <a href="about.html"><i class="fa-solid fa-circle-info"></i> SYSTEM INFO</a>
+        </aside>
+
+        <main class="main-content">
+            <div class="section-header">
+                <h2>CORE TRIBES</h2>
+                <div class="line"></div>
+            </div>
+
+            <p style="color: gray; margin-bottom: 2rem;">Join specialized micro-communities to master specific domains.</p>
+
+            <div class="grid-container">
+                <div class="tribe-card">
+                    <i class="fa-solid fa-brain tribe-icon" style="color: #bd00ff;"></i>
+                    <h3 style="font-family: 'Orbitron'; color: white;">AI & VISION</h3>
+                    <p style="color: gray; font-size: 0.9rem;">Neural networks, OpenCV, and autonomous logic.</p>
+                    <button class="join-btn" onclick="joinTribe('AI')">JOIN TRIBE</button>
+                </div>
+
+                <div class="tribe-card">
+                    <i class="fa-solid fa-plane-up tribe-icon" style="color: #00ff00;"></i>
+                    <h3 style="font-family: 'Orbitron'; color: white;">AERO / DRONE</h3>
+                    <p style="color: gray; font-size: 0.9rem;">UAVs, flight dynamics, and aerial robotics.</p>
+                    <button class="join-btn" onclick="joinTribe('Drone')">JOIN TRIBE</button>
+                </div>
+
+                <div class="tribe-card">
+                    <i class="fa-solid fa-spider tribe-icon" style="color: #ff0000;"></i>
+                    <h3 style="font-family: 'Orbitron'; color: white;">BIO-ROBOTICS</h3>
+                    <p style="color: gray; font-size: 0.9rem;">Hexapods, prosthetics, and nature-inspired tech.</p>
+                    <button class="join-btn" onclick="joinTribe('Bio')">JOIN TRIBE</button>
+                </div>
+
+                <div class="tribe-card">
+                    <i class="fa-solid fa-industry tribe-icon" style="color: #ffa500;"></i>
+                    <h3 style="font-family: 'Orbitron'; color: white;">AUTOMATION</h3>
+                    <p style="color: gray; font-size: 0.9rem;">PLC, SCADA, and Industrial Arms.</p>
+                    <button class="join-btn" onclick="joinTribe('Auto')">JOIN TRIBE</button>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="firebase-config.js"></script>
+
+    <script>
+        function joinTribe(name) {
+            alert("WELCOME TO THE " + name.toUpperCase() + " TRIBE! Access granted to private channels.");
+            // In a real app, this would save to Firebase
+        }
+    </script>
+</body>
+</html>
