@@ -123,7 +123,34 @@
             color: var(--neon-cyan); text-decoration: none; border-radius: 5px;
             font-weight: bold; transition: 0.3s;
         }
-        .action-btn:hover { background: var(--neon-cyan); color: black; }
+        .action-btn:hover { background: var(--neon-cyan); color: black; 
+        
+        /* 1. Sidebar Scrollbar */
+        .sidebar::-webkit-scrollbar {
+            width: 6px; /* Make it thin */
+        }
+        .sidebar::-webkit-scrollbar-track {
+            background: #050505; /* Match background */
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #333; /* Dark Grey Handle */
+            border-radius: 3px;
+        }
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: var(--neon-cyan); /* Glow on hover */
+        }
+
+        /* 2. Main Page Scrollbar */
+        body::-webkit-scrollbar {
+            width: 8px;
+        }
+        body::-webkit-scrollbar-track {
+            background: #050505;
+        }
+        body::-webkit-scrollbar-thumb {
+            background: var(--neon-cyan);
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
