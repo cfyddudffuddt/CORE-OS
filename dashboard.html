@@ -12,52 +12,52 @@
     <link rel="stylesheet" href="style.css">
     
     <style>
-        /* === STABLE SCROLL LAYOUT === */
+        /* === STABLE LAYOUT ENGINE === */
         body {
-            background-color: #050505; /* Dark background */
+            background-color: #050505;
             margin: 0;
-            overflow-x: hidden; /* Prevent side-scroll */
+            overflow-x: hidden; /* No side scrolling */
         }
 
-        /* 1. FIXED TOP NAV */
+        /* 1. TOP NAVIGATION (FIXED) */
         nav {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 60px;
-            z-index: 1000; /* Always on top */
             background: rgba(0, 0, 0, 0.9);
             border-bottom: 1px solid var(--glass-border);
+            z-index: 1000; /* On top of everything */
             display: flex;
             align-items: center;
             padding: 0 2rem;
             backdrop-filter: blur(10px);
         }
 
-        /* 2. FIXED SIDEBAR */
+        /* 2. SIDEBAR (FIXED LEFT) */
         .sidebar {
             position: fixed;
-            top: 60px; /* Below Nav */
+            top: 60px; /* Starts below Nav */
             left: 0;
             width: 250px;
-            height: calc(100vh - 60px); /* Full height minus Nav */
+            height: calc(100vh - 60px); /* Full height */
             background: rgba(0, 0, 0, 0.8);
             border-right: 1px solid var(--glass-border);
-            overflow-y: auto; /* Scroll sidebar if it gets too long */
-            z-index: 900;
+            overflow-y: auto; /* Scrollable sidebar if menu is long */
             padding-top: 1rem;
+            z-index: 900;
         }
 
-        /* 3. SCROLLABLE MAIN CONTENT */
+        /* 3. MAIN CONTENT (PUSHED RIGHT) */
         .main-content {
-            margin-left: 250px; /* Push content right to not hide behind sidebar */
-            margin-top: 60px;   /* Push content down to not hide behind nav */
+            margin-left: 250px; /* Exact width of sidebar */
+            margin-top: 60px;   /* Exact height of nav */
             padding: 2rem;
             min-height: 100vh;
         }
 
-        /* WIDGET GRID (Auto-Responsive) */
+        /* WIDGET GRIDS */
         .grid-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -70,19 +70,20 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             padding: 1.5rem;
             border-radius: 12px;
-            transition: 0.3s;
             position: relative;
+            transition: 0.3s;
         }
         .card:hover {
-            transform: translateY(-5px);
             border-color: var(--neon-cyan);
-            box-shadow: 0 0 20px rgba(0, 243, 255, 0.1);
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.1);
+            transform: translateY(-5px);
         }
         .card h3 { color: white; font-family: 'Orbitron'; margin-bottom: 0.5rem; }
         .card p { color: gray; font-size: 0.9rem; margin-bottom: 1.5rem; }
         .card-icon { position: absolute; top: 1rem; right: 1rem; font-size: 2rem; opacity: 0.2; color: white; }
         
         .stat-val { font-size: 2.5rem; font-family: 'Orbitron'; color: white; margin-bottom: 0.5rem; }
+        
         .action-btn {
             display: block; text-align: center; padding: 0.8rem;
             background: rgba(0, 243, 255, 0.1); border: 1px solid var(--neon-cyan);
@@ -93,7 +94,7 @@
 
         /* MOBILE FIX */
         @media (max-width: 768px) {
-            .sidebar { display: none; } /* Hide sidebar on mobile (use hamburger later) */
+            .sidebar { display: none; } /* Hide sidebar on mobile for now */
             .main-content { margin-left: 0; }
         }
     </style>
@@ -121,11 +122,11 @@
     <main class="main-content">
         
         <div class="section-header">
-            <h2 style="color: white; font-family: 'Orbitron'; margin-bottom: 0.5rem;">COMMAND DECK</h2>
-            <div style="width: 50px; height: 3px; background: var(--neon-cyan);"></div>
+            <h2 style="color: white; font-family: 'Orbitron';">COMMAND DECK</h2>
+            <div style="width: 50px; height: 3px; background: var(--neon-cyan); margin-bottom: 1.5rem;"></div>
         </div>
 
-        <div class="glass-panel" style="margin: 2rem 0; padding: 2rem; background: linear-gradient(90deg, rgba(0,243,255,0.1), transparent); border-left: 4px solid var(--neon-cyan);">
+        <div class="glass-panel" style="margin-bottom: 2rem; padding: 2rem; background: linear-gradient(90deg, rgba(0,243,255,0.1), transparent); border-left: 4px solid var(--neon-cyan);">
             <h1 id="welcome-msg" style="font-family: 'Orbitron'; color: white;">WELCOME BACK, PILOT.</h1>
             <p style="color: gray;">System Status: <span style="color: #00ff00;">ONLINE</span> | Defcon: 5</p>
         </div>
@@ -157,8 +158,8 @@
         </div>
 
         <div class="section-header" style="margin-top: 3rem;">
-            <h2 style="color: white; font-family: 'Orbitron'; margin-bottom: 0.5rem;">QUICK ACCESS</h2>
-            <div style="width: 50px; height: 3px; background: white;"></div>
+            <h2 style="color: white; font-family: 'Orbitron';">QUICK ACCESS</h2>
+            <div style="width: 50px; height: 3px; background: white; margin-bottom: 1.5rem;"></div>
         </div>
 
         <div class="grid-container">
@@ -198,6 +199,15 @@
     <script>
         auth.onAuthStateChanged(user => {
             if (user) {
+                // ADMIN CHECK
+                const ADMIN_EMAIL = "futurevisioual2020@gmail.com"; 
+                if (user.email === ADMIN_EMAIL) {
+                    document.querySelector('.sidebar').innerHTML += `
+                        <a href="admin.html" style="color: red; border: 1px solid red; margin-top:1rem;">
+                            <i class="fa-solid fa-lock"></i> ADMIN PANEL
+                        </a>`;
+                }
+
                 db.collection('users').doc(user.uid).get().then(doc => {
                     const data = doc.data();
                     const name = data.displayName || user.email.split('@')[0];
